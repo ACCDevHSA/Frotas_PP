@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08111f">
+<title>Fleet Management</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#08111f;--surface:rgba(255,255,255,.07);--surface2:#17243a;--text:#eef6ff;--muted:#91a3bb;--line:rgba(255,255,255,.11);--teal:#5eead4;--blue:#60a5fa;--green:#34d399;--red:#fb7185;--amber:#fbbf24;--shadow:0 22px 65px rgba(0,0,0,.32)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 8% 0,rgba(96,165,250,.22),transparent 31rem),linear-gradient(135deg,#07111e,#0c1729 52%,#111827)}button,input,select{font:inherit}.app{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:20px 15px;background:rgba(8,17,31,.94);border-right:1px solid var(--line);overflow:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.brand-mark{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:#fff;overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:contain}.brand h1,.brand p{margin:0}.brand h1{font-size:1.02rem}.brand p{font-size:.76rem;color:var(--muted);margin-top:3px}.nav{display:grid;gap:8px}.nav-btn{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px 13px;text-align:left;color:var(--text);background:rgba(255,255,255,.055);font-weight:800;cursor:pointer}.nav-btn.active{color:#06111f;border-color:transparent;background:linear-gradient(135deg,var(--teal),var(--blue))}.sidebar-note{margin-top:18px;padding:13px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.04);color:var(--muted);font-size:.75rem;line-height:1.55}.sidebar-note strong{display:block;color:var(--text);margin-bottom:4px}.main{min-width:0;padding:24px}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:18px}.topbar h2{margin:0;font-size:clamp(1.8rem,3vw,2.8rem)}.topbar p{margin:7px 0 0;color:var(--muted)}.source{display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid rgba(52,211,153,.35);border-radius:999px;background:rgba(52,211,153,.08);color:#9cf5cf;font-size:.72rem;font-weight:800;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{min-height:108px;padding:17px;border:1px solid var(--line);border-radius:19px;background:var(--surface);box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center}.kpi small{color:var(--muted)}.kpi strong{display:block;font-size:1.7rem;margin-top:7px}.kpi-icon{width:49px;height:49px;border-radius:15px;display:grid;place-items:center;color:#06111f;font-size:1.35rem;font-weight:900}.i1{background:var(--teal)}.i2{background:var(--green)}.i3{background:var(--red)}.i4{background:var(--amber)}.filters{display:grid;grid-template-columns:2fr repeat(3,1fr) auto;gap:9px;margin:16px 0;padding:13px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.055)}input,select{width:100%;min-width:0;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:var(--surface2);color:var(--text);outline:none}input:focus,select:focus{border-color:var(--teal)}select option{background:#111827}.btn{border:1px solid var(--line);border-radius:11px;padding:10px 13px;background:var(--surface2);color:var(--text);font-weight:800;cursor:pointer;text-decoration:none}.btn:hover{border-color:var(--teal)}.btn.primary{border:0;color:#06111f;background:linear-gradient(135deg,var(--teal),var(--blue))}.btn.disabled,.btn:disabled{opacity:.38;cursor:not-allowed;border-color:var(--line)}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:20px 0 12px}.section-head h3,.section-head p{margin:0}.section-head p{color:var(--muted);font-size:.8rem;margin-top:4px}.vehicle-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.vehicle-card{position:relative;min-height:290px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(155deg,rgba(24,38,60,.98),rgba(12,24,42,.98));box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;cursor:pointer;transition:.2s}.vehicle-card:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--blue))}.vehicle-card:hover{transform:translateY(-4px);border-color:rgba(94,234,212,.58)}.vehicle-card.unavailable{opacity:.57;filter:saturate(.7)}.vehicle-card.unavailable:before{background:linear-gradient(90deg,#64748b,var(--red))}.vehicle-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.project{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:900}.status{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:900}.status i{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 13px rgba(52,211,153,.75)}.status.off i{background:var(--red);box-shadow:none}.vehicle-card h4{font-size:1.25rem;margin:18px 0 4px}.variant{color:var(--muted);font-size:.82rem;margin-bottom:18px}.vehicle-facts{display:grid;gap:10px}.fact{display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.07);font-size:.76rem}.fact span{color:var(--muted)}.fact strong{text-align:right}.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:16px}.card-actions .btn{text-align:center;font-size:.78rem}.empty{grid-column:1/-1;padding:55px 20px;text-align:center;border:1px dashed var(--line);border-radius:18px;color:var(--muted)}.panel{padding:15px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;background:rgba(7,17,30,.55)}th,td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:.77rem;white-space:nowrap}th{position:sticky;top:0;background:#06435a;color:#fff;text-align:left;text-transform:uppercase;font-size:.68rem}.date-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);color:#a9cdfc}.hidden{display:none!important}.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:18px;background:rgba(2,8,20,.82);backdrop-filter:blur(7px)}.modal-card{width:min(820px,96vw);max-height:92vh;overflow:auto;border:1px solid #30425c;border-radius:22px;background:#0b1628;box-shadow:0 35px 100px rgba(0,0,0,.58)}.modal-head{position:relative;padding:25px;background:radial-gradient(circle at 85% 15%,rgba(94,234,212,.18),transparent 16rem),#122139;border-bottom:1px solid var(--line)}.modal-head h3{font-size:1.7rem;margin:8px 0 4px}.modal-head p{margin:0;color:var(--muted)}.close{position:absolute;right:16px;top:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-size:1.2rem;cursor:pointer}.details{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;padding:22px}.detail{padding:14px;border:1px solid var(--line);border-radius:13px;background:#111d31}.detail small{display:block;color:var(--muted);font-size:.67rem;text-transform:uppercase;font-weight:900}.detail strong{display:block;margin-top:6px;word-break:break-word}.modal-actions{display:flex;justify-content:flex-end;gap:9px;padding:0 22px 22px}.toast{position:fixed;right:20px;bottom:20px;z-index:150;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:#111c2e;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}.loading{padding:50px;text-align:center;color:var(--muted)}@media(max-width:1250px){.vehicle-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{grid-template-columns:1fr 1fr}.sidebar-note{display:none}.vehicle-grid{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}@media(max-width:620px){.main{padding:13px}.topbar{display:block}.source{display:inline-flex;margin-top:12px}.vehicle-grid,.kpis,.details,.filters{grid-template-columns:1fr}.modal-actions{flex-direction:column}.modal-actions .btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="brand"><div class="brand-mark"><img src="favicon.png" alt="Fleet logo"></div><div><h1>Fleet Management</h1><p>Vehicle availability dashboard</p></div></div>
+<nav class="nav"><button class="nav-btn active" data-view="fleet">Fleet Overview</button><button class="nav-btn" data-view="records">Fleet Loan Records</button></nav>
+<div class="sidebar-note"><strong>Official data source</strong>The dashboard reads <code>Controle_de_Frotas.xlsx</code> and <code>Registro_da_Frota.xlsx</code> directly from this repository.</div>
+</aside>
+<main class="main">
+<header class="topbar"><div><h2 id="pageTitle">Fleet Overview</h2><p id="pageSubtitle">Clear visibility of vehicles currently available and in use.</p></div><div class="source"><span class="dot"></span><span id="sourceText">Loading Excel databases...</span></div></header>
+<section id="fleetView">
+<div class="kpis"><article class="kpi"><div><small>Total Vehicles</small><strong id="totalVehicles">0</strong></div><div class="kpi-icon i1">#</div></article><article class="kpi"><div><small>Available</small><strong id="availableVehicles">0</strong></div><div class="kpi-icon i2">✓</div></article><article class="kpi"><div><small>Unavailable</small><strong id="unavailableVehicles">0</strong></div><div class="kpi-icon i3">×</div></article><article class="kpi"><div><small>Availability Rate</small><strong id="availabilityRate">0%</strong></div><div class="kpi-icon i4">%</div></article></div>
+<div class="filters"><input id="fleetSearch" type="search" placeholder="Search model, project, plate or user..."><select id="projectFilter"><option value="">All projects</option></select><select id="modelFilter"><option value="">All models</option></select><select id="statusFilter"><option value="">All statuses</option><option value="available">Available</option><option value="unavailable">Unavailable</option></select><button class="btn" id="clearFleet">Clear</button></div>
+<div class="section-head"><div><h3>Vehicle Portfolio</h3><p>Click a vehicle card to view complete information.</p></div><p><span id="visibleVehicles">0</span> vehicles shown</p></div><div class="vehicle-grid" id="vehicleGrid"><div class="loading">Loading fleet data...</div></div>
+</section>
+<section id="recordsView" class="hidden">
+<div class="kpis"><article class="kpi"><div><small>Total Records</small><strong id="totalRecords">0</strong></div><div class="kpi-icon i1">#</div></article><article class="kpi"><div><small>Unique Users</small><strong id="uniqueUsers">0</strong></div><div class="kpi-icon i2">U</div></article><article class="kpi"><div><small>Unique Vehicles</small><strong id="uniquePlates">0</strong></div><div class="kpi-icon i3">V</div></article><article class="kpi"><div><small>Open Loans</small><strong id="openLoans">0</strong></div><div class="kpi-icon i4">!</div></article></div>
+<div class="filters"><input id="recordSearch" type="search" placeholder="Search user, project, model or plate..."><select id="recordProject"><option value="">All projects</option></select><select id="recordModel"><option value="">All models</option></select><select id="recordSort"><option value="withdraw-desc">Latest withdrawal</option><option value="withdraw-asc">Oldest withdrawal</option><option value="user">User A-Z</option></select><button class="btn" id="exportCsv">Export CSV</button></div>
+<div class="section-head"><div><h3>Fleet Loan History</h3><p>Analytical record of vehicle withdrawals and returns.</p></div><p><span id="visibleRecords">0</span> records shown</p></div><div class="panel"><div class="table-wrap"><table><thead><tr><th>User</th><th>Project</th><th>Model</th><th>Version</th><th>Color</th><th>Withdrawal</th><th>Return</th><th>Plate</th></tr></thead><tbody id="recordsBody"></tbody></table></div></div>
+</section>
+</main>
+</div>
+<div class="modal hidden" id="vehicleModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><div class="modal-head"><button class="close" id="closeModal" aria-label="Close">×</button><div class="project" id="modalProject"></div><h3 id="modalTitle"></h3><p id="modalVariant"></p></div><div class="details" id="modalDetails"></div><div class="modal-actions"><button class="btn" id="modalCloseBtn">Close</button><a class="btn primary" id="modalRequest" target="_blank" rel="noopener noreferrer">Request vehicle</a></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+const REQUEST_URL = 'https://forms.cloud.microsoft/pages/responsepage.aspx?id=-48TzE2cO0OyEdRUmuYui9EJ5HObxoJMvHvuMIm7xfZUQkNCNFlSSjhJM1hUVURQNkdHTFU1N1lINS4u&route=shorturl';
+const FILES = { fleet: 'Controle_de_Frotas.xlsx', records: 'Registro_da_Frota.xlsx' };
+let data = { veiculos: [], registros: [] };
+const $ = id => document.getElementById(id);
+const clean = value => String(value ?? '').replace(/[\u00A0\u1680\u2000-\u200F\u202F\u205F\u2060\u3000\uFEFF]/g, ' ').replace(/\s+/g, ' ').trim();
+const key = value => clean(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const escapeHtml = value => clean(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+const dash = value => clean(value) && clean(value) !== '-' ? clean(value) : '-';
+function isAvailable(vehicle){ return ['available','disponivel'].includes(key(vehicle.Status)); }
+function pad(number){ return String(number).padStart(2,'0'); }
+function excelDate(value){
+  if(value === '' || value == null) return '';
+  if(typeof value === 'number'){
+    const parts = XLSX.SSF.parse_date_code(value);
+    return parts ? `${parts.y}-${pad(parts.m)}-${pad(parts.d)}` : '';
+  }
+  const text = clean(value);
+  let match = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(match) return `${match[1]}-${pad(match[2])}-${pad(match[3])}`;
+  match = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if(match) return `${match[3]}-${pad(match[1])}-${pad(match[2])}`;
+  return text;
+}
+function dateDisplay(value){ const text=excelDate(value); const match=text.match(/^(\d{4})-(\d{2})-(\d{2})$/); return match ? `${match[3]}/${match[2]}/${match[1]}` : (text || '-'); }
+function unique(values){ return [...new Set(values.map(clean).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')); }
+function toast(message){ $('toast').textContent=message; $('toast').classList.add('show'); setTimeout(()=>$('toast').classList.remove('show'),2800); }
+function findTable(workbook, required){
+  let best=null;
+  for(const sheetName of workbook.SheetNames){
+    const rows=XLSX.utils.sheet_to_json(workbook.Sheets[sheetName],{header:1,raw:true,defval:'',blankrows:false});
+    for(let rowIndex=0; rowIndex<Math.min(30,rows.length); rowIndex++){
+      const headers=rows[rowIndex].map(key);
+      const score=required.filter(header=>headers.includes(key(header))).length;
+      if(!best || score>best.score) best={rows,headerRow:rowIndex,headers,score,sheetName};
+    }
+  }
+  if(!best || best.score<required.length) throw new Error(`Required columns were not found. Expected: ${required.join(', ')}.`);
+  return best;
+}
+function rowObject(row,table){ const object={}; table.headers.forEach((header,index)=>{if(header)object[header]=row[index];}); return object; }
+function valueOf(object,...names){ for(const name of names){const value=object[key(name)];if(value!==undefined&&value!==null&&clean(value)!=='')return value;} return ''; }
+async function fetchWorkbook(fileName){
+  const response=await fetch(`${fileName}?ts=${Date.now()}`,{cache:'no-store'});
+  if(!response.ok) throw new Error(`${fileName}: HTTP ${response.status}`);
+  return XLSX.read(await response.arrayBuffer(),{type:'array',cellDates:false,cellText:false});
+}
+function parseFleet(workbook){
+  const table=findTable(workbook,['Project','Model','Status','Plate']);
+  return table.rows.slice(table.headerRow+1).filter(row=>row.some(value=>clean(value)!=='')).map(row=>{
+    const object=rowObject(row,table);
+    return {'Vehicle ID':clean(valueOf(object,'Vehicle ID')),Projeto:clean(valueOf(object,'Project','Projeto')),Modelo:clean(valueOf(object,'Model','Modelo')),'Versão':clean(valueOf(object,'Version','Versão')),Cor:clean(valueOf(object,'Color','Cor')),'Usuário Atual':clean(valueOf(object,'Current User','Usuário Atual')),'Último Usuário':clean(valueOf(object,'Last User','Último Usuário')),Status:clean(valueOf(object,'Status')),'Data Inicio':excelDate(valueOf(object,'Start Date','Data Inicio')),'Data Fim':excelDate(valueOf(object,'End Date','Data Fim')),'Ano/Modelo':clean(valueOf(object,'Year / Model','Ano/Modelo')),Placa:clean(valueOf(object,'Plate','Placa')),Renavam:clean(valueOf(object,'Renavam')),Chassi:clean(valueOf(object,'Chassis','Chassi')),'Rodízio SP / Não roda em':clean(valueOf(object,"Rotation Day in SP. Don't Use In",'Rodízio SP / Não roda em'))};
+  }).filter(vehicle=>vehicle.Modelo||vehicle.Placa);
+}
+function parseRecords(workbook){
+  const table=findTable(workbook,['Project','User','Model','Start Date','Plate']);
+  return table.rows.slice(table.headerRow+1).filter(row=>row.some(value=>clean(value)!=='')).map(row=>{
+    const object=rowObject(row,table);
+    return {'Vehicle ID':clean(valueOf(object,'Vehicle ID')),Projeto:clean(valueOf(object,'Project','Projeto')),'Usuário':clean(valueOf(object,'User','Usuário')),Modelo:clean(valueOf(object,'Model','Modelo')),'Versão':clean(valueOf(object,'Version','Versão')),Cor:clean(valueOf(object,'Color','Cor')),'Data Retirada':excelDate(valueOf(object,'Start Date','Data Retirada')),'Data Devolução':excelDate(valueOf(object,'End Date','Data Devolução')),Placa:clean(valueOf(object,'Plate','Placa'))};
+  }).filter(record=>record.Modelo||record.Placa);
+}
+async function loadData(){
+  try{
+    if(typeof XLSX==='undefined') throw new Error('Excel reader library could not be loaded.');
+    $('sourceText').textContent='Loading Excel databases...';
+    const [fleetWorkbook,recordsWorkbook]=await Promise.all([fetchWorkbook(FILES.fleet),fetchWorkbook(FILES.records)]);
+    data={veiculos:parseFleet(fleetWorkbook),registros:parseRecords(recordsWorkbook)};
+    if(!data.veiculos.length) throw new Error('No fleet vehicles were found.');
+    setup();
+    $('sourceText').textContent=`Excel databases · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+  }catch(error){
+    $('sourceText').textContent='Excel database error';
+    $('vehicleGrid').innerHTML=`<div class="empty"><strong>Unable to load Excel databases</strong><br><br>${escapeHtml(error.message)}<br><br>Confirm both XLSX files are in the same folder as index.html and their names are unchanged.</div>`;
+    toast('Fleet databases could not be loaded.');
+  }
+}
+function fillSelect(id,values,label){const element=$(id),current=element.value;element.innerHTML=`<option value="">${label}</option>`+unique(values).map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');element.value=current;}
+function setup(){fillSelect('projectFilter',data.veiculos.map(v=>v.Projeto),'All projects');fillSelect('modelFilter',data.veiculos.map(v=>v.Modelo),'All models');fillSelect('recordProject',data.registros.map(r=>r.Projeto),'All projects');fillSelect('recordModel',data.registros.map(r=>r.Modelo),'All models');renderFleet();renderRecords();}
+function renderFleet(){
+  const total=data.veiculos.length,available=data.veiculos.filter(isAvailable).length;
+  $('totalVehicles').textContent=total;$('availableVehicles').textContent=available;$('unavailableVehicles').textContent=total-available;$('availabilityRate').textContent=total?`${Math.round(available/total*100)}%`:'0%';
+  const search=key($('fleetSearch').value),project=$('projectFilter').value,model=$('modelFilter').value,status=$('statusFilter').value;
+  const rows=data.veiculos.filter(vehicle=>{const haystack=key([vehicle.Projeto,vehicle.Modelo,vehicle['Versão'],vehicle.Cor,vehicle['Usuário Atual'],vehicle['Último Usuário'],vehicle.Placa].join(' '));return(!search||haystack.includes(search))&&(!project||vehicle.Projeto===project)&&(!model||vehicle.Modelo===model)&&(!status||(status==='available')===isAvailable(vehicle));});
+  $('visibleVehicles').textContent=rows.length;
+  $('vehicleGrid').innerHTML=rows.length?rows.map(vehicle=>cardHtml(vehicle,data.veiculos.indexOf(vehicle))).join(''):'<div class="empty">No vehicles match the selected filters.</div>';
+  document.querySelectorAll('.vehicle-card').forEach(card=>{card.addEventListener('click',event=>{if(!event.target.closest('.request-link'))openVehicle(Number(card.dataset.index));});card.addEventListener('keydown',event=>{if(event.key==='Enter')openVehicle(Number(card.dataset.index));});});
+}
+function cardHtml(vehicle,index){
+  const available=isAvailable(vehicle);
+  return `<article class="vehicle-card ${available?'':'unavailable'}" data-index="${index}" tabindex="0"><div class="vehicle-top"><div class="project">${escapeHtml(dash(vehicle.Projeto))}</div><div class="status ${available?'':'off'}"><i></i>${available?'AVAILABLE':'UNAVAILABLE'}</div></div><h4>${escapeHtml(dash(vehicle.Modelo))}</h4><div class="variant">${escapeHtml(dash(vehicle['Versão']))} · ${escapeHtml(dash(vehicle.Cor))}</div><div class="vehicle-facts"><div class="fact"><span>Current user</span><strong>${escapeHtml(dash(vehicle['Usuário Atual']))}</strong></div><div class="fact"><span>Last user</span><strong>${escapeHtml(dash(vehicle['Último Usuário']))}</strong></div><div class="fact"><span>Plate</span><strong>${escapeHtml(dash(vehicle.Placa))}</strong></div></div><div class="card-actions"><button class="btn" type="button">View details</button>${available?`<a class="btn primary request-link" href="${REQUEST_URL}" target="_blank" rel="noopener noreferrer">Request</a>`:'<button class="btn disabled" type="button" disabled>Request</button>'}</div></article>`;
+}
+function openVehicle(index){
+  const vehicle=data.veiculos[index];if(!vehicle)return;const available=isAvailable(vehicle);
+  $('modalProject').textContent=dash(vehicle.Projeto);$('modalTitle').textContent=dash(vehicle.Modelo);$('modalVariant').textContent=`${dash(vehicle['Versão'])} · ${dash(vehicle.Cor)} · ${available?'Available':'Unavailable'}`;
+  const fields=[['Vehicle ID',vehicle['Vehicle ID']],['Current user',vehicle['Usuário Atual']],['Last user',vehicle['Último Usuário']],['Start date',dateDisplay(vehicle['Data Inicio'])],['End date',dateDisplay(vehicle['Data Fim'])],['Year / Model',vehicle['Ano/Modelo']],['Plate',vehicle.Placa],['Renavam',vehicle.Renavam],['Chassis',vehicle.Chassi],['SP rotation / Does not drive on',vehicle['Rodízio SP / Não roda em']],['Status',available?'Available':'Unavailable']];
+  $('modalDetails').innerHTML=fields.map(([label,value])=>`<div class="detail"><small>${escapeHtml(label)}</small><strong>${escapeHtml(dash(value))}</strong></div>`).join('');
+  const request=$('modalRequest');if(available){request.href=REQUEST_URL;request.className='btn primary';request.removeAttribute('aria-disabled');}else{request.removeAttribute('href');request.className='btn disabled';request.setAttribute('aria-disabled','true');}
+  $('vehicleModal').classList.remove('hidden');document.body.style.overflow='hidden';
+}
+function closeModal(){$('vehicleModal').classList.add('hidden');document.body.style.overflow='';}
+function filteredRecords(){
+  const search=key($('recordSearch').value),project=$('recordProject').value,model=$('recordModel').value,sort=$('recordSort').value;
+  const rows=data.registros.filter(record=>{const haystack=key([record['Usuário'],record.Projeto,record.Modelo,record['Versão'],record.Cor,record.Placa].join(' '));return(!search||haystack.includes(search))&&(!project||record.Projeto===project)&&(!model||record.Modelo===model);});
+  rows.sort((a,b)=>sort==='user'?clean(a['Usuário']).localeCompare(clean(b['Usuário']),'pt-BR'):sort==='withdraw-asc'?clean(a['Data Retirada']).localeCompare(clean(b['Data Retirada'])):clean(b['Data Retirada']).localeCompare(clean(a['Data Retirada'])));return rows;
+}
+function renderRecords(){
+  const rows=filteredRecords();$('totalRecords').textContent=data.registros.length;$('uniqueUsers').textContent=unique(data.registros.map(r=>r['Usuário'])).length;$('uniquePlates').textContent=unique(data.registros.map(r=>r.Placa)).length;$('openLoans').textContent=data.registros.filter(r=>!clean(r['Data Devolução'])||clean(r['Data Devolução'])==='-').length;$('visibleRecords').textContent=rows.length;
+  $('recordsBody').innerHTML=rows.length?rows.map(record=>`<tr><td>${escapeHtml(dash(record['Usuário']))}</td><td>${escapeHtml(dash(record.Projeto))}</td><td>${escapeHtml(dash(record.Modelo))}</td><td>${escapeHtml(dash(record['Versão']))}</td><td>${escapeHtml(dash(record.Cor))}</td><td><span class="date-pill">${escapeHtml(dateDisplay(record['Data Retirada']))}</span></td><td><span class="date-pill">${escapeHtml(dateDisplay(record['Data Devolução']))}</span></td><td><strong>${escapeHtml(dash(record.Placa))}</strong></td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:35px">No records match the selected filters.</td></tr>';
+}
+function exportCsv(){const rows=filteredRecords(),headers=['Usuário','Projeto','Modelo','Versão','Cor','Data Retirada','Data Devolução','Placa'],quote=value=>`"${clean(value).replace(/"/g,'""')}"`,csv='\ufeff'+[headers,...rows.map(record=>headers.map(header=>record[header]??''))].map(row=>row.map(quote).join(';')).join('\r\n'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),anchor=document.createElement('a');anchor.href=url;anchor.download='fleet-loan-records.csv';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),500);}
+document.querySelectorAll('.nav-btn').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(item=>item.classList.toggle('active',item===button));const fleet=button.dataset.view==='fleet';$('fleetView').classList.toggle('hidden',!fleet);$('recordsView').classList.toggle('hidden',fleet);$('pageTitle').textContent=fleet?'Fleet Overview':'Fleet Loan Records';$('pageSubtitle').textContent=fleet?'Clear visibility of vehicles currently available and in use.':'Historical view of vehicle withdrawals and returns.';}));
+['fleetSearch','projectFilter','modelFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='fleetSearch'?'input':'change',renderFleet));
+$('clearFleet').addEventListener('click',()=>{$('fleetSearch').value='';$('projectFilter').value='';$('modelFilter').value='';$('statusFilter').value='';renderFleet();});
+['recordSearch','recordProject','recordModel','recordSort'].forEach(id=>$(id).addEventListener(id==='recordSearch'?'input':'change',renderRecords));
+$('exportCsv').addEventListener('click',exportCsv);$('closeModal').addEventListener('click',closeModal);$('modalCloseBtn').addEventListener('click',closeModal);$('vehicleModal').addEventListener('click',event=>{if(event.target===$('vehicleModal'))closeModal();});document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal();});$('modalRequest').addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true')event.preventDefault();});
+loadData();setInterval(loadData,300000);
+</script>
+</body>
+</html>
