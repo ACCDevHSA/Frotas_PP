@@ -7,9 +7,14 @@ function getClient(){const c=window.APP_CONFIG||{};if(!c.SUPABASE_URL||c.SUPABAS
 applyTheme(localStorage.getItem('fleetTheme')||'dark');
 document.addEventListener('click',event=>{const button=event.target.closest('[data-close]');if(!button)return;const target=$(button.dataset.close);if(target){event.preventDefault();event.stopPropagation();target.classList.add('hidden');document.body.style.overflow=''}});
 
-// Correção visual já utilizada no modal e nos cards.
-const fixCss=document.createElement('link');fixCss.rel='stylesheet';fixCss.href='css/modal-card-fix.css?v=6.0';document.head.appendChild(fixCss);
-const fixScript=document.createElement('script');fixScript.src='js/modal-card-fix.js?v=6.0';fixScript.defer=true;document.head.appendChild(fixScript);
+function loadCss(href){const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)}
+function loadScript(src){const script=document.createElement('script');script.src=src;script.defer=true;document.head.appendChild(script)}
 
-// Remove de "Próximas reservas" a reserva aprovada quando a data inicial chega.
-const upcomingFix=document.createElement('script');upcomingFix.src='js/upcoming-reservations-fix.js?v=6.0';upcomingFix.defer=true;document.head.appendChild(upcomingFix);
+// Recursos já existentes nas versões anteriores.
+loadCss('css/modal-card-fix.css?v=8.0');
+loadScript('js/modal-card-fix.js?v=8.0');
+loadScript('js/upcoming-reservations-fix.js?v=8.0');
+
+// Projeto somente visual no formulário público.
+loadCss('css/project-readonly.css?v=8.0');
+loadScript('js/project-readonly.js?v=8.0');
