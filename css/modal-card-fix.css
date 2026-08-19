@@ -1,0 +1,120 @@
+/* Correção isolada do modal de detalhes e interação dos cards */
+.vehicle-card{
+  position:relative;
+  cursor:pointer!important;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,filter .22s ease!important;
+  will-change:transform;
+}
+.vehicle-card:hover{
+  transform:translateY(-6px) scale(1.012)!important;
+  border-color:var(--teal)!important;
+  box-shadow:0 24px 62px rgba(0,0,0,.36),0 0 0 1px color-mix(in srgb,var(--teal) 55%,transparent)!important;
+  filter:brightness(1.035);
+}
+.vehicle-card:focus-within{outline:2px solid var(--teal);outline-offset:3px}
+.vehicle-card .btn{position:relative;z-index:2}
+
+#detailsModal.modal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  overflow:auto!important;
+  background:rgba(2,8,20,.82)!important;
+  backdrop-filter:blur(9px)!important;
+}
+#detailsModal.hidden{display:none!important}
+#detailsModal .modal-card{
+  width:min(860px,96vw)!important;
+  max-height:min(760px,92vh)!important;
+  overflow:auto!important;
+  margin:auto!important;
+  border:1px solid var(--line)!important;
+  border-radius:22px!important;
+  background:var(--bg)!important;
+  color:var(--text)!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.48)!important;
+}
+#detailsModal .modal-head{
+  position:sticky!important;
+  top:0!important;
+  z-index:3!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:20px!important;
+  padding:24px!important;
+  border-bottom:1px solid var(--line)!important;
+  background:var(--surface)!important;
+}
+#detailsModal .modal-head h2{margin:0 0 6px!important;font-size:1.65rem!important;line-height:1.2!important}
+#detailsModal .modal-head p{margin:0!important;color:var(--muted)!important}
+#detailsModal .close{
+  flex:0 0 auto!important;
+  width:40px!important;
+  height:40px!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  border:1px solid var(--line)!important;
+  border-radius:50%!important;
+  background:var(--surface2)!important;
+  color:var(--text)!important;
+  font-size:1.2rem!important;
+  line-height:1!important;
+  cursor:pointer!important;
+  transition:.18s!important;
+}
+#detailsModal .close:hover{transform:rotate(90deg);border-color:var(--red)!important;color:var(--red)!important}
+#detailsModal .detail-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+  padding:22px!important;
+}
+#detailsModal .detail-grid>div{
+  min-width:0!important;
+  padding:14px 15px!important;
+  border:1px solid var(--line)!important;
+  border-radius:13px!important;
+  background:var(--surface)!important;
+}
+#detailsModal .detail-grid small{
+  display:block!important;
+  margin:0 0 7px!important;
+  color:var(--muted)!important;
+  font-size:.72rem!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  letter-spacing:.04em!important;
+  text-transform:uppercase!important;
+}
+#detailsModal .detail-grid b{
+  display:block!important;
+  overflow-wrap:anywhere!important;
+  color:var(--text)!important;
+  font-size:.97rem!important;
+  line-height:1.35!important;
+}
+#detailsModal .modal-actions{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:3!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+  padding:16px 22px 22px!important;
+  border-top:1px solid var(--line)!important;
+  background:var(--bg)!important;
+}
+@media(max-width:620px){
+  #detailsModal{padding:10px!important;align-items:flex-end!important}
+  #detailsModal .modal-card{width:100%!important;max-height:94vh!important;border-radius:20px 20px 0 0!important}
+  #detailsModal .detail-grid{grid-template-columns:1fr!important;padding:14px!important}
+  #detailsModal .modal-head{padding:18px!important}
+  #detailsModal .modal-actions{display:grid!important;grid-template-columns:1fr 1.35fr!important;padding:14px!important}
+}
+@media(prefers-reduced-motion:reduce){.vehicle-card,#detailsModal .close{transition:none!important}.vehicle-card:hover{transform:none!important}}
