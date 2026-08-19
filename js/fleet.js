@@ -1,1 +1,231 @@
-let db,vehicles=[],reservations=[],selected,channel;const today=()=>new Date().toISOString().slice(0,10),overlap=(a,b,c,d)=>a<=d&&b>=c;function showLoading(a,b){$('loadingTitle').textContent=a;$('loadingText').textContent=b;$('loading').classList.remove('hidden')}function hideLoading(){$('loading').classList.add('hidden')}function approvedFor(v){return reservations.filter(r=>r.vehicle_id===v.id&&r.status==='approved').sort((a,b)=>a.start_date.localeCompare(b.start_date))}function live(v){if(v.manual_status==='unavailable')return{busy:true,current:v.current_driver||'Indisponível',last:v.last_driver||'-',end:v.manual_end_date};if(v.manual_status==='available')return{busy:false,current:'-',last:v.last_driver||v.current_driver||'-'};const a=approvedFor(v),cur=a.find(r=>r.start_date<=today()&&r.end_date>=today()),prev=[...a].filter(r=>r.end_date<today()).sort((x,y)=>y.end_date.localeCompare(x.end_date))[0];return{busy:!!cur,current:cur?.requester_name||'-',last:prev?.requester_name||v.last_driver||'-',end:cur?.end_date,next:a.find(r=>r.start_date>today())}}async function load(silent=false){try{db=db||getClient();if(!silent)showLoading('Sincronizando frota','Buscando dados atualizados...');const [v,r]=await Promise.all([db.from('vehicles').select('*').eq('active',true).order('model'),db.from('reservations_public').select('*').in('status',['pending','approved']).order('start_date')]);if(v.error)throw v.error;if(r.error)throw r.error;vehicles=v.data||[];reservations=r.data||[];$('source').classList.add('online');$('sourceText').textContent='Supabase conectado';fill();render()}catch(e){toast(e.message)}finally{if(!silent)hideLoading()}}function fill(){const ps=[...new Set(vehicles.map(v=>v.project).filter(Boolean))];$('project').innerHTML='<option value="">Todos os projetos</option>'+ps.map(p=>`<option>${esc(p)}</option>`).join('')}function card(v){const s=live(v);return `<article class="vehicle-card ${s.busy?'unavailable':''}" onclick="openDetails('${v.id}')"><div class="vehicle-top"><span class="project-tag">${esc(v.project||'-')}</span><span class="status ${s.busy?'off':''}"><i></i>${s.busy?'INDISPONÍVEL':'DISPONÍVEL'}</span></div><h3>${esc(v.model)}</h3><p class="variant">${esc(v.version||'-')} · ${esc(v.color||'-')}</p><div class="facts"><div><span>Placa</span><b>${esc(v.plate)}</b></div><div><span>Usuário atual</span><b>${esc(s.current)}</b></div><div><span>Último usuário</span><b>${esc(s.last)}</b></div><div><span>Próxima reserva</span><b>${s.next?fmtDate(s.next.start_date):'-'}</b></div></div><button class="btn primary wide" onclick="event.stopPropagation();openRequest('${v.id}',this)">${s.busy?'Request Reservation':'Request'}</button></article>`}function render(){const q=$('search').value.toLowerCase(),p=$('project').value,a=$('availability').value,rows=vehicles.filter(v=>(!q||Object.values(v).join(' ').toLowerCase().includes(q))&&(!p||v.project===p)&&(!a||(a==='busy')===live(v).busy));const busy=vehicles.filter(v=>live(v).busy).length;$('kTotal').textContent=vehicles.length;$('kAvailable').textContent=vehicles.length-busy;$('kBusy').textContent=busy;$('kPending').textContent=reservations.filter(r=>r.status==='pending').length;$('count').textContent=rows.length;$('vehicleGrid').innerHTML=rows.map(card).join('')||'<div class="empty">Nenhum veículo encontrado.</div>';const rows2=reservations.filter(r=>r.status==='pending'||(r.status==='approved'&&r.end_date>=today())).sort((a,b)=>a.start_date.localeCompare(b.start_date));$('reservationGrid').innerHTML=rows2.map(r=>`<article class="reservation-card ${r.status}"><span class="badge ${r.status}">${statusLabel[r.status]}</span><h3>${esc(r.model)} · ${esc(r.plate)}</h3><p><b>${esc(r.requester_name)}</b></p><p>${fmtDate(r.start_date)} a ${fmtDate(r.end_date)}</p></article>`).join('')||'<div class="empty">Não há reservas futuras.</div>'}function openDetails(id){selected=vehicles.find(v=>v.id===id);const s=live(selected);$('detailsTitle').textContent=selected.model;$('detailsSubtitle').textContent=`${selected.version||'-'} · ${selected.color||'-'}`;$('detailsGrid').innerHTML=[['Projeto',selected.project],['Status',s.busy?'Indisponível':'Disponível'],['Placa',selected.plate],['Ano / Modelo',selected.year_model],['Renavam',selected.renavam],['Chassi',selected.chassis],['Rodízio',selected.rotation_day],['Usuário atual',s.current],['Último usuário',s.last],['Disponível em',s.end?fmtDate(s.end):'Agora']].map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b||'-')}</b></div>`).join('');$('detailsRequest').textContent=s.busy?'Request Reservation':'Request';$('detailsRequest').onclick=()=>{$('detailsModal').classList.add('hidden');openRequest(id,$('detailsRequest'))};$('detailsModal').classList.remove('hidden')}async function openRequest(id,b){const old=b?.innerHTML;if(b){b.disabled=true;b.innerHTML='<span class="mini-spinner"></span> Preparando...'}showLoading('Preparando formulário','Verificando disponibilidade...');await new Promise(r=>setTimeout(r,220));selected=vehicles.find(v=>v.id===id);const f=$('requestForm');f.reset();f.elements.vehicle_id.value=id;f.elements.project.value=selected.project||'';f.elements.start_date.min=f.elements.end_date.min=today();$('selectedVehicle').textContent=`${selected.model} · ${selected.plate}`;$('conflictWarning').classList.add('hidden');hideLoading();$('requestModal').classList.remove('hidden');if(b){b.disabled=false;b.innerHTML=old}}function checkConflict(){const f=$('requestForm'),s=f.elements.start_date.value,e=f.elements.end_date.value,w=$('conflictWarning');if(!s||!e)return w.classList.add('hidden');const h=reservations.find(r=>r.vehicle_id===selected.id&&r.status==='approved'&&overlap(s,e,r.start_date,r.end_date));w.classList.toggle('hidden',!h);if(h)w.innerHTML=`Conflito com reserva aprovada de <b>${fmtDate(h.start_date)}</b> a <b>${fmtDate(h.end_date)}</b>. O envio ainda é permitido para análise.`}$('requestForm').onsubmit=async e=>{e.preventDefault();const p=Object.fromEntries(new FormData(e.currentTarget)),b=$('submitRequest'),old=b.innerHTML;if(p.end_date<p.start_date)return toast('Revise o período.');b.disabled=true;b.innerHTML='<span class="mini-spinner"></span> Enviando...';showLoading('Registrando solicitação','Enviando dados para o Supabase...');try{p.status='pending';const x=await db.from('reservations').insert(p);if(x.error)throw x.error;await load(true);$('requestModal').classList.add('hidden');$('successSummary').innerHTML=`<b>${esc(selected.model)} · ${esc(selected.plate)}</b><span>${fmtDate(p.start_date)} a ${fmtDate(p.end_date)}</span>`;hideLoading();$('successModal').classList.remove('hidden')}catch(x){hideLoading();toast(x.message)}finally{b.disabled=false;b.innerHTML=old}};['start_date','end_date'].forEach(n=>$('requestForm').elements[n].onchange=checkConflict);$('themeToggle').onclick=toggleTheme;$('search').oninput=render;$('project').onchange=$('availability').onchange=render;$('clear').onclick=()=>{$('search').value=$('project').value=$('availability').value='';render()};load();setInterval(()=>load(true),30000);try{db=getClient();channel=db.channel('fleet-live').on('postgres_changes',{event:'*',schema:'public',table:'reservations'},()=>load(true)).on('postgres_changes',{event:'*',schema:'public',table:'vehicles'},()=>load(true)).subscribe()}catch(e){}
+'use strict';
+let db, vehicles = [], reservations = [], selected, channel;
+const today = () => new Date().toISOString().slice(0, 10);
+const overlap = (a, b, c, d) => a <= d && b >= c;
+
+function showLoading(title, text) {
+  $('loadingTitle').textContent = title;
+  $('loadingText').textContent = text;
+  $('loading').classList.remove('hidden');
+}
+function hideLoading() { $('loading').classList.add('hidden'); }
+
+function approvedFor(vehicle) {
+  return reservations
+    .filter(r => r.vehicle_id === vehicle.id && r.status === 'approved')
+    .sort((a, b) => a.start_date.localeCompare(b.start_date));
+}
+
+function live(vehicle) {
+  if (vehicle.manual_status === 'unavailable') {
+    return {
+      busy: true,
+      current: vehicle.current_driver || 'Indisponível',
+      last: vehicle.last_driver || '-',
+      end: vehicle.manual_end_date
+    };
+  }
+  if (vehicle.manual_status === 'available') {
+    return {
+      busy: false,
+      current: '-',
+      last: vehicle.last_driver || vehicle.current_driver || '-',
+      end: null
+    };
+  }
+  const approved = approvedFor(vehicle);
+  const current = approved.find(r => r.start_date <= today() && r.end_date >= today());
+  const previous = [...approved]
+    .filter(r => r.end_date < today())
+    .sort((a, b) => b.end_date.localeCompare(a.end_date))[0];
+  return {
+    busy: Boolean(current),
+    current: current?.requester_name || '-',
+    last: previous?.requester_name || vehicle.last_driver || '-',
+    end: current?.end_date || null
+  };
+}
+
+async function load(silent = false) {
+  try {
+    db = db || getClient();
+    if (!silent) showLoading('Sincronizando frota', 'Buscando dados atualizados...');
+    const [vehicleResult, reservationResult] = await Promise.all([
+      db.from('vehicles').select('*').eq('active', true).order('model'),
+      db.from('reservations_public').select('*').in('status', ['pending', 'approved']).order('start_date')
+    ]);
+    if (vehicleResult.error) throw vehicleResult.error;
+    if (reservationResult.error) throw reservationResult.error;
+    vehicles = vehicleResult.data || [];
+    reservations = reservationResult.data || [];
+    $('source').classList.add('online');
+    $('sourceText').textContent = 'Supabase conectado';
+    fillProjects();
+    render();
+  } catch (error) {
+    toast(error.message);
+  } finally {
+    if (!silent) hideLoading();
+  }
+}
+
+function fillProjects() {
+  const projects = [...new Set(vehicles.map(v => v.project).filter(Boolean))];
+  $('project').innerHTML = '<option value="">Todos os projetos</option>' +
+    projects.map(project => `<option>${esc(project)}</option>`).join('');
+}
+
+function card(vehicle) {
+  const state = live(vehicle);
+  return `<article class="vehicle-card ${state.busy ? 'unavailable' : ''}" onclick="openDetails('${vehicle.id}')">
+    <div class="vehicle-top">
+      <span class="project-tag">${esc(vehicle.project || '-')}</span>
+      <span class="status ${state.busy ? 'off' : ''}"><i></i>${state.busy ? 'INDISPONÍVEL' : 'DISPONÍVEL'}</span>
+    </div>
+    <h3>${esc(vehicle.model)}</h3>
+    <p class="variant">${esc(vehicle.version || '-')} · ${esc(vehicle.color || '-')}</p>
+    <div class="facts">
+      <div><span>Placa</span><b>${esc(vehicle.plate)}</b></div>
+      <div><span>Usuário atual</span><b>${esc(state.current)}</b></div>
+      <div><span>Último usuário</span><b>${esc(state.last)}</b></div>
+      <div><span>Fim da reserva atual</span><b>${state.busy && state.end ? fmtDate(state.end) : '-'}</b></div>
+    </div>
+    <button class="btn primary wide" onclick="event.stopPropagation();openRequest('${vehicle.id}',this)">${state.busy ? 'Request Reservation' : 'Request'}</button>
+  </article>`;
+}
+
+function render() {
+  const query = $('search').value.toLowerCase();
+  const project = $('project').value;
+  const availability = $('availability').value;
+  const rows = vehicles.filter(vehicle => {
+    const state = live(vehicle);
+    return (!query || Object.values(vehicle).join(' ').toLowerCase().includes(query)) &&
+      (!project || vehicle.project === project) &&
+      (!availability || (availability === 'busy') === state.busy);
+  });
+  const busy = vehicles.filter(vehicle => live(vehicle).busy).length;
+  $('kTotal').textContent = vehicles.length;
+  $('kAvailable').textContent = vehicles.length - busy;
+  $('kBusy').textContent = busy;
+  $('kPending').textContent = reservations.filter(r => r.status === 'pending').length;
+  $('count').textContent = rows.length;
+  $('vehicleGrid').innerHTML = rows.map(card).join('') || '<div class="empty">Nenhum veículo encontrado.</div>';
+
+  const reservationRows = reservations
+    .filter(r => r.status === 'pending' || (r.status === 'approved' && r.end_date >= today()))
+    .sort((a, b) => a.start_date.localeCompare(b.start_date));
+  $('reservationGrid').innerHTML = reservationRows.map(r => `<article class="reservation-card ${r.status}">
+    <span class="badge ${r.status}">${statusLabel[r.status]}</span>
+    <h3>${esc(r.model)} · ${esc(r.plate)}</h3>
+    <p><b>${esc(r.requester_name)}</b></p>
+    <p>${fmtDate(r.start_date)} a ${fmtDate(r.end_date)}</p>
+  </article>`).join('') || '<div class="empty">Não há reservas futuras.</div>';
+}
+
+function openDetails(id) {
+  selected = vehicles.find(vehicle => vehicle.id === id);
+  const state = live(selected);
+  $('detailsTitle').textContent = selected.model;
+  $('detailsSubtitle').textContent = `${selected.version || '-'} · ${selected.color || '-'}`;
+  $('detailsGrid').innerHTML = [
+    ['Projeto', selected.project],
+    ['Status', state.busy ? 'Indisponível' : 'Disponível'],
+    ['Placa', selected.plate],
+    ['Ano / Modelo', selected.year_model],
+    ['Renavam', selected.renavam],
+    ['Chassi', selected.chassis],
+    ['Rodízio', selected.rotation_day],
+    ['Usuário atual', state.current],
+    ['Último usuário', state.last],
+    ['Fim da reserva atual', state.busy && state.end ? fmtDate(state.end) : '-']
+  ].map(([label, value]) => `<div><small>${esc(label)}</small><b>${esc(value || '-')}</b></div>`).join('');
+  $('detailsRequest').textContent = state.busy ? 'Request Reservation' : 'Request';
+  $('detailsRequest').onclick = () => {
+    $('detailsModal').classList.add('hidden');
+    openRequest(id, $('detailsRequest'));
+  };
+  $('detailsModal').classList.remove('hidden');
+}
+
+async function openRequest(id, button) {
+  const original = button?.innerHTML;
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = '<span class="mini-spinner"></span> Preparando...';
+  }
+  showLoading('Preparando formulário', 'Verificando disponibilidade...');
+  await new Promise(resolve => setTimeout(resolve, 220));
+  selected = vehicles.find(vehicle => vehicle.id === id);
+  const form = $('requestForm');
+  form.reset();
+  form.elements.vehicle_id.value = id;
+  form.elements.project.value = selected.project || '';
+  form.elements.start_date.min = form.elements.end_date.min = today();
+  $('selectedVehicle').textContent = `${selected.model} · ${selected.plate}`;
+  $('conflictWarning').classList.add('hidden');
+  hideLoading();
+  $('requestModal').classList.remove('hidden');
+  if (button) {
+    button.disabled = false;
+    button.innerHTML = original;
+  }
+}
+
+function checkConflict() {
+  const form = $('requestForm');
+  const start = form.elements.start_date.value;
+  const end = form.elements.end_date.value;
+  const warning = $('conflictWarning');
+  if (!start || !end) return warning.classList.add('hidden');
+  const conflict = reservations.find(r => r.vehicle_id === selected.id && r.status === 'approved' && overlap(start, end, r.start_date, r.end_date));
+  warning.classList.toggle('hidden', !conflict);
+  if (conflict) warning.innerHTML = `Conflito com reserva aprovada de <b>${fmtDate(conflict.start_date)}</b> a <b>${fmtDate(conflict.end_date)}</b>. O envio ainda é permitido para análise.`;
+}
+
+$('requestForm').onsubmit = async event => {
+  event.preventDefault();
+  const payload = Object.fromEntries(new FormData(event.currentTarget));
+  const button = $('submitRequest');
+  const original = button.innerHTML;
+  if (payload.end_date < payload.start_date) return toast('Revise o período.');
+  button.disabled = true;
+  button.innerHTML = '<span class="mini-spinner"></span> Enviando...';
+  showLoading('Registrando solicitação', 'Enviando dados para o Supabase...');
+  try {
+    payload.status = 'pending';
+    const result = await db.from('reservations').insert(payload);
+    if (result.error) throw result.error;
+    await load(true);
+    $('requestModal').classList.add('hidden');
+    $('successSummary').innerHTML = `<b>${esc(selected.model)} · ${esc(selected.plate)}</b><span>${fmtDate(payload.start_date)} a ${fmtDate(payload.end_date)}</span>`;
+    hideLoading();
+    $('successModal').classList.remove('hidden');
+  } catch (error) {
+    hideLoading();
+    toast(error.message);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = original;
+  }
+};
+
+['start_date', 'end_date'].forEach(name => $('requestForm').elements[name].onchange = checkConflict);
+$('themeToggle').onclick = toggleTheme;
+$('search').oninput = render;
+$('project').onchange = $('availability').onchange = render;
+$('clear').onclick = () => {
+  $('search').value = '';
+  $('project').value = '';
+  $('availability').value = '';
+  render();
+};
+load();
+setInterval(() => load(true), 30000);
+try {
+  db = getClient();
+  channel = db.channel('fleet-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' }, () => load(true))
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'vehicles' }, () => load(true))
+    .subscribe();
+} catch (error) {}
