@@ -138,11 +138,20 @@
 <p style="margin-top:28px">Sumaré, ______ de ____________________ de ______.</p>
 <div class="signatures">
 <div class="signature"><b>COMODATÁRIO</b><small>${escapeHtml(data.requester_name)}<br>CPF: ${escapeHtml(data.requester_cpf)}</small></div>
-<div class="signature"><b>COMODANTE</b><small>HONDA AUTOMÓVEIS DO BRASIL LTDA.</small></div>
+<div class="signature" style="border-top: none;">
+  <b>COMODANTE</b>
+  <div style="height: 55px;"></div>
+  <div style="
+    border-top: 1px solid #111;
+    padding-top: 7px;
+    text-align: center;
+  ">
+    Assinatura
+  </div>
+</div>
 </div>
 </body></html>`;
   }
-
   async function downloadByToken(token, button) {
     button.disabled = true;
     const oldText = button.textContent;
