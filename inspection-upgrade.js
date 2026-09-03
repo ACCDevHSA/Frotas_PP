@@ -4,7 +4,7 @@
    Dependencias: index.html atual, app.js atual e Three.js carregado por este arquivo.
 */
 (() => {
-  const THREE_URL = "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js";
+  const THREE_URL = "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js";
   const PARTS = [
     { id: "front_bumper", label: "Para-choque dianteiro", position: [0, 0.62, 2.35] },
     { id: "hood", label: "Capo", position: [0, 1.02, 1.58] },
