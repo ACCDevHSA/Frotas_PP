@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#07111f" id="themeMeta">
   <title>Fleet Management</title>
 
-  <link rel="icon" href="favicon.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.png?v=10">
+  <link rel="stylesheet" href="styles.css?v=10">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
@@ -233,7 +233,7 @@
 
             <label class="full">
               Observações do veículo
-              <textarea name="vehicle_notes" id="vehicleNotes" placeholder="As avarias registradas no modelo 3D também aparecerão aqui."></textarea>
+              <textarea name="vehicle_notes" id="vehicleNotes" placeholder="Clique nos pontos e descreva as avarias aqui."></textarea>
             </label>
 
             <div class="inspection-signatures full">
@@ -244,10 +244,10 @@
 
           <div class="damage-area">
             <h3>Avarias do veículo</h3>
-            <p class="muted">Arraste para girar o veículo. Passe o mouse sobre os pontos e clique para registrar uma avaria.</p>
+            <p class="muted">Clique uma vez para marcar e numerar. Clique novamente para desmarcar e apagar.</p>
 
-            <div class="car-stage inspection-3d-stage" id="carStage" tabindex="0" aria-label="Modelo tridimensional rotacionável do veículo">
-              <div class="empty">Carregando modelo 3D...</div>
+            <div class="car-stage vehicle-views" id="carStage" tabindex="0" aria-label="Quatro vistas do veículo">
+              <div class="empty">Carregando vistas do veículo...</div>
             </div>
 
             <div id="damageEditor" class="damage-editor hidden" aria-hidden="true">
@@ -289,16 +289,9 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script src="app.js"></script>
-  <script src="inspection-2d-upgrade.js?v=1"></script>
-  <script src="inspection-simple-notes-fix.js?v=1"></script>
-  <script src="checklist-png-marked-only.js?v=1"></script>
-  <script src="checklist-withdrawal-return-png.js?v=1"></script>
-  <script src="reservation-contract-upgrade.js?v=1"></script>
-  <script src="contract-legal-upgrade.js?v=1"></script>
-  <script src="contract-current-date-fix.js?v=1"></script>
-  <script src="contract-document-engine.js?v=1"></script>
-  <script src="contract-format-selector.js?v=1"></script>
+  <script src="app.js?v=10"></script>
+  <script src="checklist-final.js?v=10"></script>
+  <script src="reservation-contract-upgrade.js?v=10"></script>
+  <script src="contracts-final.js?v=10"></script>
 </body>
 </html>
