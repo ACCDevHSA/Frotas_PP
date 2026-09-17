@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f" id="themeMeta">
+  <meta name="description" content="Gestão de frota, reservas, contratos e vistorias.">
+  <title>Fleet Management</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Dependências carregadas uma única vez e sem bloquear a leitura do HTML. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="contract-document-engine.js"></script>
+  <script defer src="app.js"></script>
+  <script defer src="checklist-final.js"></script>
+  <script defer src="sharepoint-contract-workflow.js"></script>
+  <script defer src="sharepoint-contract-input-fix.js"></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="Ir para a página inicial">
+        <span class="brand-mark"><img src="favicon.png" alt=""></span>
+        <span><strong>Fleet Management</strong><small>Reservas e vistorias</small></span>
+      </a>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#frota" class="active">▦ Frota</a>
+        <a href="#reservas">◷ Reservas</a>
+        <a href="painel.html">⚙ Administração</a>
+      </nav>
+
+      <div class="side-bottom">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+          ☀ <strong id="themeText">Tema claro</strong>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main" id="conteudoPrincipal">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">GESTÃO DE FROTA</p>
+          <h1>Veículos e reservas</h1>
+          <p class="subtitle">Disponibilidade, reservas, contratos e vistorias em uma visão.</p>
+        </div>
+        <div class="source" id="source" role="status" aria-live="polite">
+          <i aria-hidden="true"></i><span id="sourceText">Conectando...</span>
+        </div>
+      </header>
+
+      <section class="kpis" aria-label="Indicadores da frota">
+        <article class="kpi"><small>Total</small><strong id="kTotal">0</strong><em>Veículos ativos</em></article>
+        <article class="kpi"><small>Disponíveis</small><strong id="kAvailable">0</strong><em>Prontos para uso</em></article>
+        <article class="kpi"><small>Em uso</small><strong id="kBusy">0</strong><em>Reserva ativa hoje</em></article>
+        <article class="kpi"><small>Pendentes</small><strong id="kPending">0</strong><em>Aguardando análise</em></article>
+      </section>
+
+      <section id="frota" aria-labelledby="fleetTitle">
+        <div class="toolbar">
+          <label class="sr-only" for="search">Buscar veículo</label>
+          <input id="search" type="search" placeholder="Buscar projeto, modelo ou placa" autocomplete="off">
+          <label class="sr-only" for="project">Filtrar por projeto</label>
+          <select id="project"><option value="">Todos os projetos</option></select>
+          <label class="sr-only" for="availability">Filtrar por disponibilidade</label>
+          <select id="availability">
+            <option value="">Todos os status</option>
+            <option value="available">Disponível</option>
+            <option value="busy">Indisponível</option>
+          </select>
+          <button class="btn" id="clear" type="button">Limpar</button>
+        </div>
+
+        <div class="section-head">
+          <div><h2 id="fleetTitle">Portfólio de veículos</h2><p>O status e o usuário mudam automaticamente conforme a data.</p></div>
+          <span><b id="count">0</b> veículos</span>
+        </div>
+        <div class="vehicle-grid" id="vehicleGrid" aria-live="polite"><div class="empty">Carregando...</div></div>
+      </section>
+
+      <section id="reservas" aria-labelledby="reservationQueueTitle">
+        <div class="section-head">
+          <div><h2 id="reservationQueueTitle">Minhas solicitações e reservas</h2><p>Acompanhe contrato, aprovação, retirada e devolução de cada solicitação.</p></div>
+        </div>
+        <div class="smart-grid" id="reservationGrid" aria-live="polite"><div class="empty">Carregando...</div></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><p class="eyebrow">DADOS DO VEÍCULO</p><h2 id="detailsTitle"></h2><p id="detailsSubtitle"></p></div>
+        <button class="close" type="button" data-close="detailsModal" aria-label="Fechar">×</button>
+      </div>
+      <div class="detail-grid" id="detailsGrid"></div>
+      <div class="modal-actions">
+        <button class="btn" type="button" data-close="detailsModal">Fechar</button>
+        <button class="btn primary" type="button" id="detailsRequest">Solicitar veículo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="requestModal" role="dialog" aria-modal="true" aria-labelledby="requestTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><p class="eyebrow">NOVA SOLICITAÇÃO</p><h2 id="requestTitle">Solicitar veículo</h2><p id="selectedVehicle"></p></div>
+        <button class="close" type="button" data-close="requestModal" aria-label="Fechar">×</button>
+      </div>
+      <form id="requestForm" novalidate>
+        <div class="form-grid">
+          <input type="hidden" name="vehicle_id">
+          <label class="full">Usuário *
+            <select name="fleet_user_id" id="fleetUser" required><option value="">Selecione o usuário</option></select>
+          </label>
+          <label>Data inicial *<input name="start_date" type="date" required></label>
+          <label>Data final *<input name="end_date" type="date" required></label>
+          <label class="full">Finalidade *<textarea name="purpose" required maxlength="1000"></textarea></label>
+          <label class="full">Observações<textarea name="notes" maxlength="2000"></textarea></label>
+          <div class="warning full hidden" id="conflictWarning" role="alert" aria-live="assertive"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close="requestModal">Cancelar</button>
+          <button type="submit" class="btn primary" id="submitRequest">Enviar solicitação</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="inspectionModal" role="dialog" aria-modal="true" aria-labelledby="inspectionTitle" aria-hidden="true">
+    <div class="modal-card wide-modal">
+      <div class="modal-head">
+        <div><p class="eyebrow">VISTORIA DO VEÍCULO</p><h2 id="inspectionTitle">Checklist de Retirada</h2><p id="inspectionVehicle"></p></div>
+        <button class="close" type="button" data-close="inspectionModal" aria-label="Fechar">×</button>
+      </div>
+      <form id="inspectionForm">
+        <input type="hidden" name="loan_record_id">
+        <input type="hidden" name="inspection_type">
+        <div class="inspection-layout">
+          <div class="form-grid compact">
+            <label>KM atual *<input type="number" min="0" step="1" name="odometer_km" required></label>
+            <label>Data *<input type="date" name="inspection_date" required></label>
+            <label>Hora *<input type="time" name="inspection_time" required></label>
+            <label>Quem realizou a vistoria *<input name="inspector_name" required maxlength="150"></label>
+            <label class="full" id="driverLabel">Quem utilizará o veículo *<input name="driver_name" required maxlength="150"></label>
+            <label class="full">Observações do veículo<textarea name="vehicle_notes" id="vehicleNotes" maxlength="3000" placeholder="Clique nos pontos e descreva as avarias aqui."></textarea></label>
+            <div class="inspection-signatures full">
+              <div class="signature-preview">Assinatura de quem utilizará/utilizou o veículo</div>
+              <div class="signature-preview">Assinatura de quem realizou a vistoria</div>
+            </div>
+          </div>
+          <div class="damage-area">
+            <h3>Avarias do veículo</h3>
+            <p class="muted">Clique uma vez para marcar e numerar. Clique novamente para desmarcar e apagar.</p>
+            <div class="car-stage vehicle-views" id="carStage" tabindex="0" aria-label="Quatro vistas do veículo"><div class="empty">Carregando vistas do veículo...</div></div>
+            <div id="damageEditor" class="damage-editor hidden" aria-hidden="true">
+              <b id="damagePart"></b>
+              <textarea id="damageDescription" maxlength="1000" placeholder="Detalhe a avaria"></textarea>
+              <button type="button" class="btn small primary" id="addDamage">Registrar avaria</button>
+            </div>
+            <div id="damageList" class="damage-list" aria-live="polite"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close="inspectionModal">Cancelar</button>
+          <button type="submit" class="btn primary">Concluir vistoria</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="contractModal" role="dialog" aria-modal="true" aria-labelledby="contractTitle" aria-hidden="true">
+    <div class="success-card">
+      <div class="success-icon" aria-hidden="true">✓</div>
+      <h2 id="contractTitle">Solicitação aprovada</h2>
+      <p id="contractMessage"></p>
+      <div class="modal-actions centered">
+        <button class="btn" type="button" data-close="contractModal">Fechar</button>
+        <button class="btn primary" type="button" id="downloadContract">Baixar contrato</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading hidden" id="loading" role="status" aria-live="polite" aria-hidden="true">
+    <div class="loader-card"><div class="spinner" aria-hidden="true"></div><h3 id="loadingTitle">Carregando</h3><p id="loadingText">Aguarde...</p></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
