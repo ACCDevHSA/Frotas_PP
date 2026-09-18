@@ -1,4 +1,13 @@
-<!doctype html><html lang="pt-BR" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fleet Management</title><link rel="icon" href="favicon.png"><style>/* ==========================================================
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f" id="themeMeta">
+  <meta name="description" content="Gestão de frota, reservas, contratos e vistorias.">
+  <title>Fleet Management</title>
+  <link rel="icon" href="favicon.png">
+  <style>/* ==========================================================
    FLEET MANAGEMENT - MINIMAL UI
    Requisitos:
    - favicon.png na raiz do site
@@ -1001,31 +1010,360 @@ th {
   }
 }
 
-.public-shell{max-width:1440px;margin:auto}.vehicle-live{display:grid;gap:4px;margin:12px 0;color:var(--muted)}.timeline{display:grid;gap:12px}.timeline .reservation-card{border-left:4px solid var(--accent)}.admin-login{max-width:420px}.contract-note{font-size:.75rem;color:var(--muted)}@media print{.sidebar,.toolbar,.btn{display:none!important}}
-html,body{width:100%;min-height:100%;}body{min-height:100vh;min-height:100dvh}.public-shell{width:100%;max-width:none!important;min-height:100vh;min-height:100dvh;margin:0}.public-shell.app{grid-template-columns:var(--sidebar-width) minmax(0,1fr)}.public-shell>.sidebar{height:100vh;height:100dvh}.public-shell>.main{width:100%;min-height:100vh;min-height:100dvh;overflow-x:hidden}@media (min-width:1200px) and (min-aspect-ratio:16/10){.public-shell>.main{padding:clamp(24px,2.1vw,40px)}.vehicle-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.timeline{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (min-width:1700px) and (min-aspect-ratio:16/10){:root{--sidebar-width:280px}.vehicle-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.timeline{grid-template-columns:repeat(4,minmax(0,1fr))}.topbar h1{font-size:clamp(2.2rem,2.5vw,3.2rem)}}
+html,body{width:100%;min-height:100%}body{min-height:100vh;min-height:100dvh}.app{width:100%;max-width:none;min-height:100vh;min-height:100dvh}.sidebar{height:100vh;height:100dvh}.main{width:100%;min-height:100vh;min-height:100dvh;overflow-x:hidden}@media (min-width:1200px) and (min-aspect-ratio:16/10){.main{padding:clamp(24px,2.1vw,40px)}.vehicle-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.smart-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (min-width:1700px) and (min-aspect-ratio:16/10){:root{--sidebar-width:280px}.vehicle-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.smart-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script></head><body>
-<div class="app public-shell" id="publicApp"><aside class="sidebar"><a class="brand" href="#"><span class="brand-mark"><img src="favicon.png" alt=""></span><span><strong>Fleet Management</strong><small>Reservas e contratos</small></span></a><nav class="nav"><a href="#frota" class="active">▦ Frota</a><a href="#reservas">◷ Fila de reservas</a><button class="nav-link" id="adminOpen">⚙ Administração</button></nav><div class="side-bottom"><button class="theme-toggle" id="themeToggle">☀ <strong>Tema claro</strong></button></div></aside>
-<main class="main"><header class="topbar"><div><p class="eyebrow">GESTÃO DE FROTA</p><h1>Veículos e reservas</h1><p class="subtitle">Disponibilidade, contratos e fila futura em uma única página.</p></div><div class="source" id="source"><i></i><span>Conectando...</span></div></header>
-<section class="kpis"><article class="kpi"><small>Total</small><strong id="kTotal">0</strong></article><article class="kpi"><small>Disponíveis</small><strong id="kAvailable">0</strong></article><article class="kpi"><small>Em uso</small><strong id="kBusy">0</strong></article><article class="kpi"><small>Pendentes</small><strong id="kPending">0</strong></article></section>
-<section id="frota"><div class="toolbar"><input id="search" placeholder="Buscar modelo, projeto ou placa"><select id="project"><option value="">Todos os projetos</option></select><select id="availability"><option value="">Todos os status</option><option value="available">Disponível</option><option value="busy">Indisponível</option></select><button class="btn" id="clear">Limpar</button></div><div class="section-head"><div><h2>Portfólio de veículos</h2><p>Status calculado pelas reservas aprovadas e bloqueios manuais.</p></div><span><b id="count">0</b> veículos</span></div><div class="vehicle-grid" id="vehicleGrid"></div></section>
-<section id="reservas"><div class="section-head"><div><h2>Fila de reservas</h2><p>Timeline de solicitações pendentes e aprovadas.</p></div></div><div class="timeline" id="reservationGrid"></div></section></main></div>
-<div class="modal hidden" id="requestModal"><div class="modal-card"><div class="modal-head"><div><p class="eyebrow">NOVA RESERVA</p><h2 id="requestTitle">Reservar veículo</h2><p id="selectedVehicle"></p></div><button class="close" data-close="requestModal">×</button></div><form id="requestForm"><div class="form-grid"><input type="hidden" name="vehicle_id"><label class="full">Usuário *<select name="fleet_user_id" id="fleetUser" required></select></label><label>Data inicial *<input type="date" name="start_date" required></label><label>Data final *<input type="date" name="end_date" required></label><label class="full">Finalidade *<textarea name="purpose" required></textarea></label><label class="full">Observações<textarea name="notes"></textarea></label></div><div class="modal-actions"><button type="button" class="btn" data-close="requestModal">Cancelar</button><button class="btn primary" type="submit" id="submitRequest">Reservar e gerar contrato</button></div></form></div></div>
-<div class="modal hidden" id="adminModal"><div class="modal-card wide-modal"><div class="modal-head"><div><p class="eyebrow">ADMINISTRAÇÃO</p><h2>Painel administrativo</h2></div><button class="close" data-close="adminModal">×</button></div><div id="adminLogin" class="form-grid admin-login"><label>E-mail<input id="adminEmail" type="email"></label><label>Senha<input id="adminPassword" type="password"></label><button class="btn primary" id="adminSignIn">Entrar</button></div><div id="adminPanel" class="hidden"><div class="section-head" style="padding:0 20px"><h2>Reservas</h2><button class="btn" id="adminSignOut">Sair</button></div><div class="panel table-wrap"><table><thead><tr><th>Solicitante</th><th>Veículo</th><th>Período</th><th>Status</th><th>Contrato</th><th>Ações</th></tr></thead><tbody id="adminBody"></tbody></table></div></div></div></div>
-<div class="toast" id="toast"></div>
-<script>
-const CFG={url:'https://slbwszjlrpwrgkgtsfnk.supabase.co',key:'sb_publishable_ljR8FTbX6eB_P_VeLck28A_By8nIq34'};let db,state={vehicles:[],users:[],reservations:[]};
-const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=d=>d?new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC'}).format(new Date(d+'T12:00:00Z')):'';
-function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3500)}function open(id){$('#'+id).classList.remove('hidden')}function close(id){$('#'+id).classList.add('hidden')}
-function current(v){let t=new Date().toISOString().slice(0,10);return state.reservations.find(r=>r.vehicle_id===v.id&&r.status==='approved'&&r.start_date<=t&&r.end_date>=t)}function available(v){return v.manual_status!=='unavailable'&&!current(v)}
-async function load(){let [v,u,r]=await Promise.all([db.from('vehicles').select('*').eq('active',true).order('model'),db.rpc('list_fleet_users'),db.from('fleet_reservations_public').select('*').order('start_date')]);if(v.error||u.error||r.error)throw(v.error||u.error||r.error);state={vehicles:v.data||[],users:u.data||[],reservations:r.data||[]};render()}
-function render(){let q=$('#search').value.toLowerCase(),pr=$('#project').value,av=$('#availability').value;let projects=[...new Set(state.vehicles.map(v=>v.project).filter(Boolean))].sort();$('#project').innerHTML='<option value="">Todos os projetos</option>'+projects.map(x=>`<option ${x===pr?'selected':''}>${esc(x)}</option>`).join('');let vs=state.vehicles.filter(v=>(!q||[v.model,v.project,v.plate].join(' ').toLowerCase().includes(q))&&(!pr||v.project===pr)&&(!av||(av==='available')===available(v)));$('#kTotal').textContent=state.vehicles.length;$('#kAvailable').textContent=state.vehicles.filter(available).length;$('#kBusy').textContent=state.vehicles.filter(v=>!available(v)).length;$('#kPending').textContent=state.reservations.filter(r=>r.status==='pending').length;$('#count').textContent=vs.length;$('#vehicleGrid').innerHTML=vs.map(v=>{let c=current(v),future=state.reservations.filter(r=>r.vehicle_id===v.id&&r.end_date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.start_date.localeCompare(b.start_date))[0];return `<article class="vehicle-card"><div class="vehicle-top"><span class="project-tag">${esc(v.project||'SEM PROJETO')}</span><span class="status ${available(v)?'':'off'}"><i></i>${available(v)?'Disponível':'Indisponível'}</span></div><h3>${esc(v.model)}</h3><p class="variant">${esc(v.version||'')} · ${esc(v.plate)}</p><div class="vehicle-live"><span>${c?'Com: '+esc(c.requester_name):'Sem usuário atual'}</span><span>${c?'Disponível após '+fmt(c.end_date):(future?'Próxima reserva: '+fmt(future.start_date):'Sem reservas futuras')}</span></div><button class="btn primary" data-request="${v.id}">Reservar veículo</button></article>`}).join('')||'<div class="empty">Nenhum veículo encontrado.</div>';$('#reservationGrid').innerHTML=state.reservations.map(r=>`<article class="reservation-card"><span class="badge ${r.status}">${r.status}</span><h3>${esc(r.model)} · ${esc(r.plate)}</h3><p>${esc(r.requester_name)} | ${fmt(r.start_date)} a ${fmt(r.end_date)}</p></article>`).join('')||'<div class="empty">Nenhuma reserva futura.</div>'}
-function startRequest(id){let v=state.vehicles.find(x=>x.id===id);let f=$('#requestForm');f.reset();f.vehicle_id.value=id;$('#selectedVehicle').textContent=v.model+' · '+v.plate;$('#fleetUser').innerHTML='<option value="">Selecione</option>'+state.users.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');open('requestModal')}
-const legal=[`2. Para os efeitos deste instrumento, o COMODATÁRIO declara e reconhece receber o veículo acima identificado em perfeitas condições de uso, assumindo a condição de fiel depositário, sendo responsável direta e pessoalmente pela guarda, conservação e limpeza, ressalvada sua depreciação normal decorrente do uso, devendo restituí-lo imediatamente à HONDA quando findo ou rescindido este Contrato.`,`Parágrafo Primeiro. Caso o veículo não seja restituído no prazo assinalado, o COMODATÁRIO ficará sujeito às sanções previstas na legislação vigente. Parágrafo Segundo. Em caso de sinistro, extravio, roubo, furto ou acidente, a HONDA deverá ser prontamente comunicada. O COMODATÁRIO responderá pelas despesas não cobertas pelo seguro, inclusive franquia, quando aplicável.`,`Parágrafo Terceiro. O veículo será avaliado conforme a tabela FIPE vigente. Parágrafo Quarto. O COMODATÁRIO não efetuará reparos ou substituição de peças sem prévia autorização da HONDA. Parágrafo Quinto. Deverá comunicar possíveis falhas. Parágrafo Sexto. É proibido emprestar o veículo a terceiros.`,`3. Enquanto vigente o Contrato, o COMODATÁRIO obriga-se a zelar pela guarda do veículo e mantê-lo em perfeitas condições de operação, devolvendo-o nas mesmas condições, ressalvado o desgaste normal. 4.2. Comunicará necessidades de reparo. 4.3. Obedecerá às normas de trânsito e responderá pelas infrações e danos causados a terceiros. 4.4. Não realizará alterações na configuração original. 4.5. Declara concordância com a Norma Interna da frota de Planejamento de Produto.`,`5. CONFIDENCIALIDADE. O COMODATÁRIO manterá absoluto sigilo sobre os termos deste Contrato. 6. DISPOSIÇÕES FINAIS. A HONDA fica isenta de responsabilidade decorrente do uso, sendo o COMODATÁRIO responsável por infrações durante a vigência. 7. O COMODATÁRIO declara ciência das normas vigentes de uso da frota. 8. FORO. Fica eleito o Foro da Comarca de Sumaré (SP), com renúncia a qualquer outro.`];
-function pdfBlob(r,v,u,num){const {jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'});d.setFont('helvetica');d.setFontSize(13);d.text('Contrato de Comodato de Veículo para Colaboradores',105,15,{align:'center'});d.setFontSize(10);let y=24;const line=(t,b=false)=>{d.setFont('helvetica',b?'bold':'normal');let a=d.splitTextToSize(t,180);if(y+a.length*5>282){d.addPage();y=16}d.text(a,15,y);y+=a.length*5+2};line('Nº: '+num,true);line('COMODANTE: HONDA AUTOMÓVEIS DO BRASIL LTDA., Estrada Municipal Valêncio Calegari, 777, Distrito de Nova Veneza, Sumaré/SP.');line('COMODATÁRIO',true);line(`NOME: ${u.full_name}   CPF: ${u.cpf||''}   CNH nº: ${u.cnh||''}`);line(`MATRÍCULA: ${u.employee_number||''}   CARGO: ${u.job_title||''}`);line(`DEPARTAMENTO: ${u.department||''}   EMPRESA: HAB`);line('VEÍCULO',true);line(`MODELO/VERSÃO: ${v.model} ${v.version||''}   COR: ${v.color||''}`);line(`PLACAS: ${v.plate}   CHASSI: ${v.chassis||''}   ANO/MODELO: ${v.year_model||''}`);line('PRAZO',true);line(`1. O presente Contrato é firmado pelo prazo de ${fmt(r.start_date)} a ${fmt(r.end_date)}.`);line('CONSERVAÇÃO E CONDIÇÕES DE USO E RESTITUIÇÃO DO VEÍCULO',true);legal.forEach((x,i)=>{if(i===3)line('OBRIGAÇÕES DO COMODATÁRIO',true);if(i===4)line('CONFIDENCIALIDADE E DISPOSIÇÕES FINAIS',true);line(x)});let now=new Date(),mes=now.toLocaleDateString('pt-BR',{month:'long'});line(`Sumaré, ${now.getDate()} de ${mes} de ${now.getFullYear()}.`);line('________________________________     __________________________________');line('COMODANTE                                      COMODATÁRIO',true);line('Testemunhas:');line('Nome: __________________________     Nome: __________________________');line('CPF/MF nº: ______________________     CPF/MF nº: ______________________');return d.output('blob')}
-async function submit(e){e.preventDefault();let f=e.currentTarget,o=Object.fromEntries(new FormData(f)),u=state.users.find(x=>x.id===o.fleet_user_id),v=state.vehicles.find(x=>x.id===o.vehicle_id);if(o.end_date<o.start_date)return toast('Data final inválida.');let b=$('#submitRequest');b.disabled=true;try{let {data,error}=await db.rpc('create_reservation_with_contract',{p_vehicle_id:o.vehicle_id,p_fleet_user_id:o.fleet_user_id,p_start_date:o.start_date,p_end_date:o.end_date,p_purpose:o.purpose,p_notes:o.notes||null});if(error)throw error;let x=data[0],r={...o,id:x.reservation_id},blob=pdfBlob(r,v,u,x.contract_number),name=`${x.tracking_token}/Contrato-${x.contract_number}.pdf`;let up=await db.storage.from('fleet-contracts').upload(name,blob,{contentType:'application/pdf',upsert:false});if(up.error)throw up.error;let url=db.storage.from('fleet-contracts').getPublicUrl(name).data.publicUrl;let sv=await db.rpc('save_generated_contract',{p_token:x.tracking_token,p_url:url,p_file_name:name});if(sv.error)throw sv.error;let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Contrato-${x.contract_number}.pdf`;a.click();close('requestModal');toast('Reserva criada e contrato gerado. Guarde o protocolo: '+x.tracking_token);await load()}catch(err){toast(err.message)}finally{b.disabled=false}}
-async function adminLoad(){let {data,error}=await db.from('reservations_admin').select('*').order('created_at',{ascending:false});if(error)throw error;$('#adminBody').innerHTML=data.map(r=>`<tr><td>${esc(r.requester_name)}</td><td>${esc(r.model)} · ${esc(r.plate)}</td><td>${fmt(r.start_date)} a ${fmt(r.end_date)}</td><td>${esc(r.status)}</td><td>${r.contract_url?`<a class="btn" target="_blank" rel="noopener" href="${esc(r.contract_url)}">Abrir PDF</a>`:'-'}</td><td class="actions"><button class="btn primary" data-status="approved" data-id="${r.id}">Aprovar</button><button class="btn danger" data-status="rejected" data-id="${r.id}">Rejeitar</button><button class="btn danger" data-delete="${r.id}">Excluir</button></td></tr>`).join('')}
-document.addEventListener('click',async e=>{let b=e.target.closest('button');if(!b)return;if(b.dataset.close)close(b.dataset.close);if(b.dataset.request)startRequest(b.dataset.request);if(b.dataset.status){let q=await db.rpc('admin_set_reservation_status',{p_reservation_id:b.dataset.id,p_status:b.dataset.status,p_notes:null});q.error?toast(q.error.message):(toast('Status atualizado.'),adminLoad(),load())}if(b.dataset.delete&&confirm('Excluir definitivamente?')){let q=await db.rpc('admin_delete_reservation',{p_reservation_id:b.dataset.delete});q.error?toast(q.error.message):(adminLoad(),load())}});
-$('#requestForm').onsubmit=submit;['search','project','availability'].forEach(id=>$('#'+id).addEventListener(id==='search'?'input':'change',render));$('#clear').onclick=()=>{$('#search').value='';$('#project').value='';$('#availability').value='';render()};$('#themeToggle').onclick=()=>{let h=document.documentElement,l=h.dataset.theme==='light';h.dataset.theme=l?'dark':'light'};$('#adminOpen').onclick=async()=>{open('adminModal');let s=(await db.auth.getSession()).data.session;if(s){$('#adminLogin').classList.add('hidden');$('#adminPanel').classList.remove('hidden');adminLoad()}};$('#adminSignIn').onclick=async()=>{let {error}=await db.auth.signInWithPassword({email:$('#adminEmail').value,password:$('#adminPassword').value});if(error)return toast(error.message);let a=await db.from('fleet_admins').select('user_id').maybeSingle();if(a.error||!a.data){await db.auth.signOut();return toast('Usuário não autorizado.')}$('#adminLogin').classList.add('hidden');$('#adminPanel').classList.remove('hidden');adminLoad()};$('#adminSignOut').onclick=async()=>{await db.auth.signOut();$('#adminPanel').classList.add('hidden');$('#adminLogin').classList.remove('hidden')};
-window.addEventListener('DOMContentLoaded',async()=>{try{db=supabase.createClient(CFG.url,CFG.key);await load();$('#source').classList.add('online');$('#source span').textContent='Conectado'}catch(e){toast(e.message);$('#source span').textContent='Erro de conexão'}});
-</script></body></html>
+
+  <!-- Dependências carregadas uma única vez e sem bloquear a leitura do HTML. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="contract-document-engine.js"></script>
+  <script defer src="checklist-final.js"></script>
+  <script defer src="sharepoint-contract-workflow.js"></script>
+  <script defer src="sharepoint-contract-input-fix.js"></script>
+<script>window.APP_CONFIG = Object.freeze({
+  SUPABASE_URL: "https://slbwszjlrpwrgkgtsfnk.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_ljR8FTbX6eB_P_VeLck28A_By8nIq34",
+  TABLES: Object.freeze({
+    vehicles: "vehicles",
+    users: "fleet_users",
+    requests: "reservations",
+    admins: "fleet_admins",
+    records: "loan_records",
+    inspections: "vehicle_inspections"
+  }),
+  STATUS: Object.freeze({ pending: "pending", approved: "approved", rejected: "rejected", cancelled: "cancelled", active: "active", completed: "completed" })
+});
+</script><script>(() => {"use strict";
+const C=window.APP_CONFIG,T=C.TABLES,S=C.STATUS;let db,state={vehicles:[],users:[],requests:[]};
+const $=s=>document.querySelector(s), esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toast=(m,t="")=>{const e=$("#toast");e.textContent=m;e.className=`toast show ${t}`;setTimeout(()=>e.className="toast",3200)};
+const fmt=d=>d?new Intl.DateTimeFormat("pt-BR",{timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")):"";
+function open(id){const e=$("#"+id);e?.classList.remove("hidden");e?.setAttribute("aria-hidden","false")};function close(id){const e=$("#"+id);e?.classList.add("hidden");e?.setAttribute("aria-hidden","true")}
+function active(r){const today=new Date().toISOString().slice(0,10);return r.status===S.approved&&r.start_date<=today&&r.end_date>=today}
+function available(v){return v.manual_status!=="unavailable"&&!state.requests.some(r=>r.vehicle_id===v.id&&active(r))}
+async function load(){
+ const [v,u,r]=await Promise.all([db.from(T.vehicles).select("*").eq("active",true).order("model"),db.from(T.users).select("*").eq("active",true).order("full_name"),db.from(T.requests).select("*").order("created_at",{ascending:false})]);
+ for(const x of [v,u,r])if(x.error)throw x.error;state={vehicles:v.data||[],users:u.data||[],requests:r.data||[]};render();
+}
+function render(){
+ $("#kTotal").textContent=state.vehicles.length;$("#kAvailable").textContent=state.vehicles.filter(available).length;$("#kBusy").textContent=state.vehicles.filter(v=>!available(v)).length;$("#kPending").textContent=state.requests.filter(r=>r.status===S.pending).length;
+ const p=$("#project"),old=p.value;p.innerHTML='<option value="">Todos os projetos</option>'+[...new Set(state.vehicles.map(v=>v.project).filter(Boolean))].sort().map(x=>`<option>${esc(x)}</option>`).join("");p.value=old;
+ const q=$("#search").value.toLowerCase(),proj=p.value,av=$("#availability").value;const vs=state.vehicles.filter(v=>(!q||[v.project,v.model,v.plate].join(" ").toLowerCase().includes(q))&&(!proj||v.project===proj)&&(!av||(av==="available")===available(v)));
+ $("#count").textContent=vs.length;$("#vehicleGrid").innerHTML=vs.map(v=>`<article class="vehicle-card" data-id="${v.id}"><span class="badge ${available(v)?'approved':''}">${available(v)?'Disponível':'Indisponível'}</span><h3>${esc(v.model)}</h3><p>${esc(v.project||'Sem projeto')} · ${esc(v.plate)}</p><button class="btn" data-details="${v.id}">Ver detalhes</button> ${available(v)?`<button class="btn primary" data-request="${v.id}">Solicitar</button>`:""}</article>`).join("")||'<div class="empty">Nenhum veículo encontrado.</div>';
+ const future=state.requests.filter(r=>[S.pending,S.approved].includes(r.status));$("#reservationGrid").innerHTML=future.map(requestCard).join("")||'<div class="empty">Nenhuma reserva futura.</div>';
+}
+function requestCard(r){const v=state.vehicles.find(x=>x.id===r.vehicle_id)||{},u=state.users.find(x=>x.id===r.fleet_user_id)||{};const contract=makeContract(r,v,u);return `<article class="reservation-card" data-reservation-id="${r.id}"><span class="badge ${esc(r.status)}">${esc(r.status)}</span><h3>${esc(v.model||'Veículo')} · ${esc(v.plate||'')}</h3><p>${esc(u.full_name||'Usuário')}</p><strong>${fmt(r.start_date)} a ${fmt(r.end_date)}</strong>${r.status===S.pending?`<div class="contract-box"><strong>Aguardando assinatura do contrato</strong><p>Baixe o contrato, salve o PDF assinado no SharePoint e cole o link.</p><div class="contract-actions"><button class="btn primary" data-download="${r.id}">Baixar contrato</button></div><input data-contract-link value="${esc(r.signed_contract_url||'')}" placeholder="https://empresa.sharepoint.com/..."><div class="reservation-actions"><button class="btn primary" data-complete="${r.id}" ${r.signed_contract_url?'':'disabled'}>Concluir Solicitação</button><button class="btn danger" data-cancel="${r.id}">Cancelar reserva</button></div></div>`:""}</article>`}
+function makeContract(r,v,u){return `<!doctype html><meta charset="utf-8"><title>Contrato de uso de veículo</title><style>body{font:16px Arial;max-width:800px;margin:50px auto;line-height:1.6}h1{text-align:center}.sig{margin-top:80px;display:flex;justify-content:space-between}.sig div{width:44%;border-top:1px solid;text-align:center}</style><h1>Termo de Responsabilidade de Uso de Veículo</h1><p>Solicitante: <b>${esc(u.full_name)}</b></p><p>Veículo: <b>${esc(v.model)} · ${esc(v.plate)}</b></p><p>Período: <b>${fmt(r.start_date)} a ${fmt(r.end_date)}</b></p><p>Finalidade: ${esc(r.purpose)}</p><p>O solicitante declara responsabilidade pela utilização e conservação do veículo durante o período informado, conforme normas internas aplicáveis.</p><div class="sig"><div>Solicitante</div><div>Responsável pela frota</div></div>`}
+function startRequest(id){const v=state.vehicles.find(x=>x.id===id);if(!v)return;const f=$("#requestForm");f.reset();f.vehicle_id.value=id;$("#selectedVehicle").textContent=`${v.model} · ${v.plate}`;$("#fleetUser").innerHTML='<option value="">Selecione o usuário</option>'+state.users.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join("");open("requestModal")}
+async function submitRequest(e){e.preventDefault();const f=e.currentTarget,o=Object.fromEntries(new FormData(f));if(o.end_date<o.start_date)return toast("Data final inválida.","error");const conflict=state.requests.some(r=>r.vehicle_id===o.vehicle_id&&[S.pending,S.approved].includes(r.status)&&r.start_date<=o.end_date&&r.end_date>=o.start_date);if(conflict)return toast("Já existe reserva nesse período.","error");const b=$("#submitRequest");b.disabled=true;const {error}=await db.from(T.requests).insert({...o,status:S.pending});b.disabled=false;if(error)return toast(error.message,"error");close("requestModal");toast("Solicitação enviada.","success");await load()}
+async function cancel(id){if(!confirm("Deseja cancelar esta reserva?"))return;const {error}=await db.from(T.requests).update({status:S.cancelled}).eq("id",id);if(error)return toast(error.message,"error");toast("Reserva cancelada.","success");load()}
+async function complete(id,input){if(!/^https?:\/\//i.test(input.value.trim()))return toast("Informe um link válido.","error");const {error}=await db.from(T.requests).update({signed_contract_url:input.value.trim(),status:S.approved}).eq("id",id);if(error)return toast(error.message,"error");toast("Solicitação concluída.","success");load()}
+function events(){document.addEventListener("click",e=>{const b=e.target.closest("button,[data-close]");if(!b)return;if(b.dataset.close)return close(b.dataset.close);if(b.dataset.request)return startRequest(b.dataset.request);if(b.dataset.details){const v=state.vehicles.find(x=>x.id===b.dataset.details);$("#detailsTitle").textContent=v.model;$("#detailsSubtitle").textContent=v.plate;$("#detailsGrid").innerHTML=Object.entries(v).filter(([k])=>!["id","created_at"].includes(k)).map(([k,x])=>`<div><small>${esc(k)}</small><strong>${esc(x)}</strong></div>`).join("");$("#detailsRequest").onclick=()=>{close("detailsModal");startRequest(v.id)};open("detailsModal")};if(b.dataset.cancel)cancel(b.dataset.cancel);if(b.dataset.download){const r=state.requests.find(x=>x.id===b.dataset.download),v=state.vehicles.find(x=>x.id===r.vehicle_id),u=state.users.find(x=>x.id===r.fleet_user_id);const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([makeContract(r,v,u)],{type:"text/html"}));a.download=`contrato-${v.plate||r.id}.html`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}if(b.dataset.complete){const card=b.closest(".reservation-card");complete(b.dataset.complete,card.querySelector("[data-contract-link]"))}});document.addEventListener("input",e=>{if(e.target.matches("[data-contract-link]")){const b=e.target.closest(".reservation-card").querySelector("[data-complete]");b.disabled=!/^https?:\/\//i.test(e.target.value.trim())}});["search","project","availability"].forEach(id=>$("#"+id)?.addEventListener(id==="search"?"input":"change",render));$("#clear")?.addEventListener("click",()=>{$("#search").value="";$("#project").value="";$("#availability").value="";render()});$("#requestForm")?.addEventListener("submit",submitRequest)}
+async function init(){try{if(!window.supabase?.createClient)throw Error("SDK do Supabase não carregado.");db=window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);window.fleetDb=db;events();await load();$("#source").classList.add("online");$("#sourceText").textContent="Conectado"}catch(e){console.error(e);$("#sourceText").textContent="Erro de conexão";toast(e.message,"error")}}
+document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):init();})();</script><script>(()=>{"use strict";const C=APP_CONFIG,T=C.TABLES,S=C.STATUS;let db,state={vehicles:[],users:[],requests:[],records:[]};const $=s=>document.querySelector(s),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));const toast=(m,t="")=>{const e=$("#toast");e.textContent=m;e.className=`toast show ${t}`;setTimeout(()=>e.className="toast",3000)};const open=id=>{$("#"+id).classList.remove("hidden");$("#"+id).setAttribute("aria-hidden","false")},close=id=>{$("#"+id).classList.add("hidden");$("#"+id).setAttribute("aria-hidden","true")};
+async function authorized(user){const {data,error}=await db.from(T.admins).select("*").eq("user_id",user.id).maybeSingle();if(error)throw error;return !!data}
+async function enter(session){if(!session||!await authorized(session.user)){await db.auth.signOut();$("#loginView").classList.remove("hidden");$("#adminView").classList.add("hidden");return}$("#loginView").classList.add("hidden");$("#adminView").classList.remove("hidden");await load()}
+async function load(){const qs=await Promise.all([db.from(T.vehicles).select("*").order("model"),db.from(T.users).select("*").order("full_name"),db.from(T.requests).select("*").order("created_at",{ascending:false}),db.from(T.records).select("*").order("created_at",{ascending:false})]);for(const q of qs)if(q.error)throw q.error;[state.vehicles,state.users,state.requests,state.records]=qs.map(q=>q.data||[]);render()}
+function render(){$("#kVehicles").textContent=state.vehicles.filter(v=>v.active).length;$("#kPending").textContent=state.requests.filter(r=>r.status===S.pending).length;$("#kApproved").textContent=state.requests.filter(r=>r.status===S.approved).length;$("#kOpen").textContent=state.records.filter(r=>r.status===S.active).length;$("#fleetBody").innerHTML=state.vehicles.map(v=>`<tr><td>${esc(v.project)}</td><td>${esc(v.model)}</td><td>${esc(v.plate)}</td><td>${esc(v.manual_status)}</td><td>${v.active?'Sim':'Não'}</td><td><button class="btn" data-edit-vehicle="${v.id}">Editar</button></td></tr>`).join("");$("#usersBody").innerHTML=state.users.map(u=>`<tr><td>${esc(u.full_name)}</td><td>${esc(u.email)}</td><td>${esc(u.employee_number)}</td><td>${esc(u.department)}</td><td>${esc(u.job_title)}</td><td>${esc(u.cpf)}</td><td>${esc(u.cnh)}</td><td>${u.active?'Sim':'Não'}</td><td><button class="btn" data-edit-user="${u.id}">Editar</button></td></tr>`).join("");$("#requestsBody").innerHTML=state.requests.map(r=>{const v=state.vehicles.find(x=>x.id===r.vehicle_id)||{},u=state.users.find(x=>x.id===r.fleet_user_id)||{};return `<tr><td>${esc(u.full_name)}</td><td>${esc(v.model)} · ${esc(v.plate)}</td><td>${esc(r.start_date)} a ${esc(r.end_date)}</td><td>${esc(r.status)}</td><td><button class="btn danger" data-delete-request="${r.id}">Excluir</button></td></tr>`}).join("");$("#recordsBody").innerHTML=state.records.map(r=>`<tr><td>${esc(r.fleet_user_id)}</td><td>${esc(r.vehicle_id)}</td><td>${esc(r.checkout_at)}</td><td>${esc(r.return_at)}</td><td>${esc(r.status)}</td><td>${esc(r.inspection_status||'')}</td></tr>`).join("")}
+function fill(form,obj={}){[...form.elements].forEach(e=>{if(e.name)e.value=obj[e.name]??(e.name==='active'?'true':'')})}
+async function save(e,table){e.preventDefault();const o=Object.fromEntries(new FormData(e.currentTarget));o.active=o.active==='true';const id=o.id;delete o.id;const q=id?db.from(table).update(o).eq('id',id):db.from(table).insert(o);const {error}=await q;if(error)return toast(error.message,'error');close(e.currentTarget.closest('.modal').id);toast('Registro salvo.','success');load()}
+function events(){$("#loginForm").addEventListener('submit',async e=>{e.preventDefault();const o=Object.fromEntries(new FormData(e.currentTarget));const {data,error}=await db.auth.signInWithPassword(o);if(error)return toast(error.message,'error');enter(data.session)});$("#logout").onclick=async()=>{await db.auth.signOut();location.reload()};$("#vehicleForm").onsubmit=e=>save(e,T.vehicles);$("#userForm").onsubmit=e=>save(e,T.users);document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.close)return close(b.dataset.close);if(b.id==='newVehicle'){fill($("#vehicleForm"));open('vehicleModal')}if(b.id==='newUser'){fill($("#userForm"));open('userModal')}if(b.dataset.editVehicle){fill($("#vehicleForm"),state.vehicles.find(x=>x.id===b.dataset.editVehicle));open('vehicleModal')}if(b.dataset.editUser){fill($("#userForm"),state.users.find(x=>x.id===b.dataset.editUser));open('userModal')}if(b.dataset.deleteRequest){if(!confirm('Excluir esta reserva permanentemente?'))return;const {error}=await db.rpc('admin_delete_reservation',{p_reservation_id:b.dataset.deleteRequest});if(error)toast(error.message,'error');else{toast('Reserva excluída.','success');load()}}});document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['fleet','users','requests','records'].forEach(n=>$("#"+n+'Tab').classList.toggle('hidden',n!==b.dataset.tab))})}
+async function init(){db=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);events();const {data}=await db.auth.getSession();enter(data.session);db.auth.onAuthStateChange((_e,s)=>enter(s))}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init()})();</script></head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="Ir para a página inicial">
+        <span class="brand-mark"><img src="favicon.png" alt=""></span>
+        <span><strong>Fleet Management</strong><small>Reservas e vistorias</small></span>
+      </a>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#frota" class="active">▦ Frota</a>
+        <a href="#reservas">◷ Reservas</a>
+        <a href="#administracao" id="openAdminConsolidated">⚙ Administração</a>
+      </nav>
+
+      <div class="side-bottom">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+          ☀ <strong id="themeText">Tema claro</strong>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main" id="conteudoPrincipal">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">GESTÃO DE FROTA</p>
+          <h1>Veículos e reservas</h1>
+          <p class="subtitle">Disponibilidade, reservas, contratos e vistorias em uma visão.</p>
+        </div>
+        <div class="source" id="source" role="status" aria-live="polite">
+          <i aria-hidden="true"></i><span id="sourceText">Conectando...</span>
+        </div>
+      </header>
+
+      <section class="kpis" aria-label="Indicadores da frota">
+        <article class="kpi"><small>Total</small><strong id="kTotal">0</strong><em>Veículos ativos</em></article>
+        <article class="kpi"><small>Disponíveis</small><strong id="kAvailable">0</strong><em>Prontos para uso</em></article>
+        <article class="kpi"><small>Em uso</small><strong id="kBusy">0</strong><em>Reserva ativa hoje</em></article>
+        <article class="kpi"><small>Pendentes</small><strong id="kPending">0</strong><em>Aguardando análise</em></article>
+      </section>
+
+      <section id="frota" aria-labelledby="fleetTitle">
+        <div class="toolbar">
+          <label class="sr-only" for="search">Buscar veículo</label>
+          <input id="search" type="search" placeholder="Buscar projeto, modelo ou placa" autocomplete="off">
+          <label class="sr-only" for="project">Filtrar por projeto</label>
+          <select id="project"><option value="">Todos os projetos</option></select>
+          <label class="sr-only" for="availability">Filtrar por disponibilidade</label>
+          <select id="availability">
+            <option value="">Todos os status</option>
+            <option value="available">Disponível</option>
+            <option value="busy">Indisponível</option>
+          </select>
+          <button class="btn" id="clear" type="button">Limpar</button>
+        </div>
+
+        <div class="section-head">
+          <div><h2 id="fleetTitle">Portfólio de veículos</h2><p>O status e o usuário mudam automaticamente conforme a data.</p></div>
+          <span><b id="count">0</b> veículos</span>
+        </div>
+        <div class="vehicle-grid" id="vehicleGrid" aria-live="polite"><div class="empty">Carregando...</div></div>
+      </section>
+
+      <section id="reservas" aria-labelledby="reservationQueueTitle">
+        <div class="section-head">
+          <div><h2 id="reservationQueueTitle">Minhas solicitações e reservas</h2><p>Acompanhe contrato, aprovação, retirada e devolução de cada solicitação.</p></div>
+        </div>
+        <div class="smart-grid" id="reservationGrid" aria-live="polite"><div class="empty">Carregando...</div></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><p class="eyebrow">DADOS DO VEÍCULO</p><h2 id="detailsTitle"></h2><p id="detailsSubtitle"></p></div>
+        <button class="close" type="button" data-close="detailsModal" aria-label="Fechar">×</button>
+      </div>
+      <div class="detail-grid" id="detailsGrid"></div>
+      <div class="modal-actions">
+        <button class="btn" type="button" data-close="detailsModal">Fechar</button>
+        <button class="btn primary" type="button" id="detailsRequest">Solicitar veículo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="requestModal" role="dialog" aria-modal="true" aria-labelledby="requestTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><p class="eyebrow">NOVA SOLICITAÇÃO</p><h2 id="requestTitle">Solicitar veículo</h2><p id="selectedVehicle"></p></div>
+        <button class="close" type="button" data-close="requestModal" aria-label="Fechar">×</button>
+      </div>
+      <form id="requestForm" novalidate>
+        <div class="form-grid">
+          <input type="hidden" name="vehicle_id">
+          <label class="full">Usuário *
+            <select name="fleet_user_id" id="fleetUser" required><option value="">Selecione o usuário</option></select>
+          </label>
+          <label>Data inicial *<input name="start_date" type="date" required></label>
+          <label>Data final *<input name="end_date" type="date" required></label>
+          <label class="full">Finalidade *<textarea name="purpose" required maxlength="1000"></textarea></label>
+          <label class="full">Observações<textarea name="notes" maxlength="2000"></textarea></label>
+          <div class="warning full hidden" id="conflictWarning" role="alert" aria-live="assertive"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close="requestModal">Cancelar</button>
+          <button type="submit" class="btn primary" id="submitRequest">Enviar solicitação</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="inspectionModal" role="dialog" aria-modal="true" aria-labelledby="inspectionTitle" aria-hidden="true">
+    <div class="modal-card wide-modal">
+      <div class="modal-head">
+        <div><p class="eyebrow">VISTORIA DO VEÍCULO</p><h2 id="inspectionTitle">Checklist de Retirada</h2><p id="inspectionVehicle"></p></div>
+        <button class="close" type="button" data-close="inspectionModal" aria-label="Fechar">×</button>
+      </div>
+      <form id="inspectionForm">
+        <input type="hidden" name="loan_record_id">
+        <input type="hidden" name="inspection_type">
+        <div class="inspection-layout">
+          <div class="form-grid compact">
+            <label>KM atual *<input type="number" min="0" step="1" name="odometer_km" required></label>
+            <label>Data *<input type="date" name="inspection_date" required></label>
+            <label>Hora *<input type="time" name="inspection_time" required></label>
+            <label>Quem realizou a vistoria *<input name="inspector_name" required maxlength="150"></label>
+            <label class="full" id="driverLabel">Quem utilizará o veículo *<input name="driver_name" required maxlength="150"></label>
+            <label class="full">Observações do veículo<textarea name="vehicle_notes" id="vehicleNotes" maxlength="3000" placeholder="Clique nos pontos e descreva as avarias aqui."></textarea></label>
+            <div class="inspection-signatures full">
+              <div class="signature-preview">Assinatura de quem utilizará/utilizou o veículo</div>
+              <div class="signature-preview">Assinatura de quem realizou a vistoria</div>
+            </div>
+          </div>
+          <div class="damage-area">
+            <h3>Avarias do veículo</h3>
+            <p class="muted">Clique uma vez para marcar e numerar. Clique novamente para desmarcar e apagar.</p>
+            <div class="car-stage vehicle-views" id="carStage" tabindex="0" aria-label="Quatro vistas do veículo"><div class="empty">Carregando vistas do veículo...</div></div>
+            <div id="damageEditor" class="damage-editor hidden" aria-hidden="true">
+              <b id="damagePart"></b>
+              <textarea id="damageDescription" maxlength="1000" placeholder="Detalhe a avaria"></textarea>
+              <button type="button" class="btn small primary" id="addDamage">Registrar avaria</button>
+            </div>
+            <div id="damageList" class="damage-list" aria-live="polite"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close="inspectionModal">Cancelar</button>
+          <button type="submit" class="btn primary">Concluir vistoria</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="contractModal" role="dialog" aria-modal="true" aria-labelledby="contractTitle" aria-hidden="true">
+    <div class="success-card">
+      <div class="success-icon" aria-hidden="true">✓</div>
+      <h2 id="contractTitle">Solicitação aprovada</h2>
+      <p id="contractMessage"></p>
+      <div class="modal-actions centered">
+        <button class="btn" type="button" data-close="contractModal">Fechar</button>
+        <button class="btn primary" type="button" id="downloadContract">Baixar contrato</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading hidden" id="loading" role="status" aria-live="polite" aria-hidden="true">
+    <div class="loader-card"><div class="spinner" aria-hidden="true"></div><h3 id="loadingTitle">Carregando</h3><p id="loadingText">Aguarde...</p></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="adminConsolidatedRoot" class="hidden" aria-hidden="true"><main id="loginView" class="login-shell">
+    <form id="loginForm" class="login-card">
+      <p class="eyebrow">ADMINISTRAÇÃO</p>
+      <h1>Fleet Management</h1>
+      <p class="subtitle">Entre com uma conta autorizada.</p>
+      <label>E-mail<input type="email" name="email" autocomplete="username" required></label>
+      <label>Senha<input type="password" name="password" autocomplete="current-password" required></label>
+      <button type="submit" class="btn primary">Entrar</button>
+      <p class="muted small-text">A conta deve existir no Supabase Auth e em fleet_admins.</p>
+    </form>
+  </main>
+
+  <div id="adminView" class="app hidden" aria-hidden="true">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="Ir para a página inicial">
+        <span class="brand-mark"><img src="favicon.png" alt=""></span>
+        <span><strong>Fleet Management</strong><small>Painel de gestão</small></span>
+      </a>
+      <nav class="nav" aria-label="Navegação administrativa">
+        <button type="button" class="nav-link active tab" data-tab="fleet" aria-controls="fleetTab">▦ Veículos</button>
+        <button type="button" class="nav-link tab" data-tab="users" aria-controls="usersTab">♙ Usuários</button>
+        <button type="button" class="nav-link tab" data-tab="requests" aria-controls="requestsTab">◷ Solicitações</button>
+        <button type="button" class="nav-link tab" data-tab="records" aria-controls="recordsTab">☷ Empréstimos</button>
+      </nav>
+      <div class="side-bottom">
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Alternar tema">☀ <strong id="themeText">Tema claro</strong></button>
+        <button type="button" class="btn danger wide" id="logout">Sair</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">ADMINISTRAÇÃO</p><h1>Painel de gestão</h1><p class="subtitle">Cadastros, contratos, solicitações e histórico.</p></div>
+        <div class="source online" role="status"><i aria-hidden="true"></i><span>Conectado</span></div>
+      </header>
+
+      <section class="kpis" aria-label="Indicadores administrativos">
+        <article class="kpi"><small>Veículos ativos</small><strong id="kVehicles">0</strong></article>
+        <article class="kpi"><small>Pendentes</small><strong id="kPending">0</strong></article>
+        <article class="kpi"><small>Aprovadas</small><strong id="kApproved">0</strong></article>
+        <article class="kpi"><small>Em uso</small><strong id="kOpen">0</strong></article>
+      </section>
+
+      <section id="fleetTab" aria-labelledby="fleetAdminTitle">
+        <div class="section-head">
+          <div><h2 id="fleetAdminTitle">Base de veículos</h2><p>A disponibilidade automática considera as reservas confirmadas.</p></div>
+          <button type="button" class="btn primary" id="newVehicle">＋ Novo veículo</button>
+        </div>
+        <div class="panel table-wrap"><table>
+          <thead><tr><th>Projeto</th><th>Modelo</th><th>Placa</th><th>Status manual</th><th>Ativo</th><th>Ações</th></tr></thead>
+          <tbody id="fleetBody"></tbody>
+        </table></div>
+      </section>
+
+      <section id="usersTab" class="hidden" aria-labelledby="usersTitle" aria-hidden="true">
+        <div class="section-head">
+          <div><h2 id="usersTitle">Usuários da frota</h2><p>Dados usados na solicitação e no contrato.</p></div>
+          <button type="button" class="btn primary" id="newUser">＋ Novo usuário</button>
+        </div>
+        <div class="panel table-wrap"><table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Matrícula</th><th>Departamento</th><th>Cargo</th><th>CPF</th><th>CNH</th><th>Ativo</th><th>Ações</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table></div>
+      </section>
+
+      <section id="requestsTab" class="hidden" aria-labelledby="requestsTitle" aria-hidden="true">
+        <div class="section-head"><div><h2 id="requestsTitle">Solicitações</h2><p>Consulte contratos originais e contratos assinados.</p></div></div>
+        <div class="panel table-wrap"><table>
+          <thead><tr><th>Solicitante</th><th>Veículo</th><th>Período</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="requestsBody"></tbody>
+        </table></div>
+      </section>
+
+      <section id="recordsTab" class="hidden" aria-labelledby="recordsTitle" aria-hidden="true">
+        <div class="section-head"><div><h2 id="recordsTitle">Empréstimos e vistorias</h2></div></div>
+        <div class="panel table-wrap"><table>
+          <thead><tr><th>Usuário</th><th>Veículo</th><th>Retirada</th><th>Devolução</th><th>Status</th><th>Vistoria</th></tr></thead>
+          <tbody id="recordsBody"></tbody>
+        </table></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="vehicleModal" role="dialog" aria-modal="true" aria-labelledby="vehicleModalTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head"><h2 id="vehicleModalTitle">Veículo</h2><button type="button" class="close" data-close="vehicleModal" aria-label="Fechar">×</button></div>
+      <form id="vehicleForm">
+        <div class="form-grid">
+          <input type="hidden" name="id">
+          <label>Projeto<input name="project" maxlength="150"></label>
+          <label>Modelo *<input name="model" required maxlength="150"></label>
+          <label>Versão<input name="version" maxlength="100"></label>
+          <label>Cor<input name="color" maxlength="60"></label>
+          <label>Ano / Modelo<input name="year_model" maxlength="20"></label>
+          <label>Placa *<input name="plate" required maxlength="10" autocomplete="off"></label>
+          <label>Renavam<input name="renavam" inputmode="numeric" maxlength="20"></label>
+          <label>Chassi<input name="chassis" maxlength="30"></label>
+          <label>Rodízio<input name="rotation_day" maxlength="30"></label>
+          <label>Status manual<select name="manual_status"><option value="auto">Automático</option><option value="available">Disponível</option><option value="unavailable">Indisponível</option></select></label>
+          <label>Início manual<input type="date" name="manual_start_date"></label>
+          <label>Fim manual<input type="date" name="manual_end_date"></label>
+          <label>Ativo<select name="active"><option value="true">Sim</option><option value="false">Não</option></select></label>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn" data-close="vehicleModal">Cancelar</button><button type="submit" class="btn primary">Salvar</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="userModal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head"><h2 id="userModalTitle">Usuário</h2><button type="button" class="close" data-close="userModal" aria-label="Fechar">×</button></div>
+      <form id="userForm">
+        <div class="form-grid">
+          <input type="hidden" name="id">
+          <label>Nome completo *<input name="full_name" required maxlength="200" autocomplete="name"></label>
+          <label>E-mail<input type="email" name="email" maxlength="254" autocomplete="email"></label>
+          <label>Matrícula<input name="employee_number" maxlength="50"></label>
+          <label>Departamento<input name="department" maxlength="150"></label>
+          <label>Cargo<input name="job_title" maxlength="150"></label>
+          <label>CPF *<input name="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required autocomplete="off"></label>
+          <label>CNH *<input name="cnh" inputmode="numeric" maxlength="20" placeholder="Número da CNH" required autocomplete="off"></label>
+          <label>Ativo<select name="active"><option value="true">Sim</option><option value="false">Não</option></select></label>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn" data-close="userModal">Cancelar</button><button type="submit" class="btn primary" id="saveUserButton">Salvar</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div></div><script>(function(){const t=document.getElementById('openAdminConsolidated'),r=document.getElementById('adminConsolidatedRoot'),m=document.querySelector('body > .app');if(!t||!r||!m)return;t.onclick=e=>{e.preventDefault();m.classList.add('hidden');r.classList.remove('hidden');r.setAttribute('aria-hidden','false')};r.addEventListener('click',e=>{const h=e.target.closest('.brand[href="index.html"]');if(h){e.preventDefault();r.classList.add('hidden');m.classList.remove('hidden')}})})();</script></body>
+</html>
