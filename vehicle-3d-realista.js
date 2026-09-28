@@ -18,8 +18,8 @@ function part(mesh,id,kind){mesh.userData={inspection:true,id,kind};mesh.castSha
 
 function createSedan(THREE){
  const group=new THREE.Group();group.name='Sedan branco';
- const paint=new THREE.MeshPhysicalMaterial({color:0xf7f7f5,metalness:.18,roughness:.25,clearcoat:1,clearcoatRoughness:.12});
- const glass=new THREE.MeshPhysicalMaterial({color:0x53616b,roughness:.08,metalness:.08,transparent:true,opacity:.72,clearcoat:1});
+ const paint=new THREE.MeshPhysicalMaterial({color:0xf8f8f6,metalness:.24,roughness:.19,clearcoat:1,clearcoatRoughness:.08});
+ const glass=new THREE.MeshPhysicalMaterial({color:0x26343d,roughness:.06,metalness:.16,transparent:true,opacity:.78,clearcoat:1});
  const black=new THREE.MeshStandardMaterial({color:0x111315,roughness:.45,metalness:.22});
  const chrome=new THREE.MeshStandardMaterial({color:0xbcc4c9,roughness:.18,metalness:.9});
  const red=new THREE.MeshStandardMaterial({color:0xd71933,roughness:.2,metalness:.12,emissive:0x280006});
@@ -27,12 +27,12 @@ function createSedan(THREE){
  const tire=new THREE.MeshStandardMaterial({color:0x141516,roughness:.82});
  function add(m,p,r){m.position.set(...p);if(r)m.rotation.set(...r);group.add(m);return m}
  // carroceria principal alongada, capô baixo e porta-malas separado
- add(part(roundedBox(THREE,4.55,.72,1.78,.26,paint),'body','body'),[0,-.05,0]);
- add(part(roundedBox(THREE,1.55,.33,1.72,.2,paint),'hood','hood'),[1.48,.42,0],[0,0,-.035]);
- add(part(roundedBox(THREE,1.13,.36,1.69,.2,paint),'trunk','trunk'),[-1.78,.39,0],[0,0,.025]);
+ add(part(roundedBox(THREE,4.72,.68,1.80,.30,paint),'body','body'),[0,-.05,0]);
+ add(part(roundedBox(THREE,1.62,.30,1.70,.22,paint),'hood','hood'),[1.53,.38,0],[0,0,-.035]);
+ add(part(roundedBox(THREE,1.18,.33,1.68,.21,paint),'trunk','trunk'),[-1.82,.37,0],[0,0,.025]);
  // cabine fastback semelhante às referencias
- const cabin=part(roundedBox(THREE,2.55,.88,1.48,.28,glass),'cabin','glass');add(cabin,[-.25,.78,0]);cabin.scale.set(1,.95,1);
- add(part(roundedBox(THREE,1.92,.16,1.39,.14,paint),'roof','roof'),[-.36,1.25,0]);
+ const cabin=part(roundedBox(THREE,2.62,.82,1.46,.30,glass),'cabin','glass');add(cabin,[-.30,.76,0]);cabin.scale.set(1,.95,1);
+ add(part(roundedBox(THREE,1.98,.14,1.37,.14,paint),'roof','roof'),[-.36,1.25,0]);
  // para-brisas inclinados
  const fw=part(roundedBox(THREE,.73,.08,1.42,.07,glass),'windshield','glass');add(fw,[.82,.91,0],[0,0,-.62]);
  const rw=part(roundedBox(THREE,.66,.08,1.38,.07,glass),'rear-window','glass');add(rw,[-1.3,.88,0],[0,0,.64]);
@@ -66,6 +66,13 @@ function createSedan(THREE){
  const plate=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.8});
  add(part(roundedBox(THREE,.055,.25,.57,.03,plate),'front-plate','front'),[2.425,-.03,0]);
  add(part(roundedBox(THREE,.055,.25,.57,.03,plate),'rear-plate','rear'),[-2.425,-.02,0]);
+ // detalhes visuais inspirados nas referencias 2D: spoiler discreto, antena e vincos
+ const spoiler=part(roundedBox(THREE,.42,.08,1.28,.04,paint),'rear-spoiler','rear');add(spoiler,[-2.05,.64,0],[0,0,.02]);
+ const antenna=new THREE.Mesh(new THREE.ConeGeometry(.09,.28,20),black);antenna.rotation.z=-Math.PI/2;antenna.position.set(-.92,1.39,0);antenna.userData={inspection:true,id:'antenna',kind:'roof'};group.add(antenna);
+ for(const side of [-1,1]){
+   const belt=new THREE.Mesh(new THREE.BoxGeometry(2.65,.035,.025),chrome);belt.position.set(-.15,.58,side*.925);group.add(belt);
+   const crease=new THREE.Mesh(new THREE.BoxGeometry(2.95,.018,.018),chrome);crease.position.set(.02,.02,side*.93);crease.rotation.z=-.035;group.add(crease);
+ }
  return group;
 }
 
@@ -89,21 +96,21 @@ function init(stage){
  scene.add(new THREE.HemisphereLight(0xffffff,0x607080,2.6));const key=new THREE.DirectionalLight(0xffffff,3);key.position.set(5,8,6);key.castShadow=true;scene.add(key);const fill=new THREE.DirectionalLight(0xcfe6ff,1.4);fill.position.set(-5,4,-4);scene.add(fill);
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(18,18),new THREE.MeshStandardMaterial({color:0xdce4e8,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.91;floor.receiveShadow=true;scene.add(floor);
  const car=createSedan(THREE);scene.add(car);
- const target=new THREE.Vector3(0,.18,0),ray=new THREE.Raycaster(),mouse=new THREE.Vector2();let down=null,drag=false,theta=.7,phi=1.05,radius=7.4,hover=null;
+ const target=new THREE.Vector3(0,.18,0),ray=new THREE.Raycaster(),mouse=new THREE.Vector2();let down=null,drag=false,theta=.72,phi=1.08,radius=7.2,hover=null;const cameraKey='pp_fleet_3d_camera';try{const saved=JSON.parse(localStorage.getItem(cameraKey)||'null');if(saved){theta=saved.theta??theta;phi=saved.phi??phi;radius=saved.radius??radius}}catch{}
  const preview=stage.querySelector('.model-mark-preview');
- function cam(){camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi)+.35,radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(target)}cam();
+ function cam(){camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi)+.35,radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(target)}function preset(name){const p={default:[.72,1.08,7.2],front:[0,1.16,7],rear:[Math.PI,1.16,7],left:[Math.PI/2,1.15,7],right:[-Math.PI/2,1.15,7],top:[Math.PI/2,.18,8]}[name]||[.72,1.08,7.2];theta=p[0];phi=p[1];radius=p[2];cam();localStorage.setItem(cameraKey,JSON.stringify({theta,phi,radius}))}cam();stage.closest('.model3d-shell')?.querySelectorAll('[data-camera-preset]').forEach(b=>b.addEventListener('click',()=>preset(b.dataset.cameraPreset)));stage.closest('.model3d-shell')?.querySelector('#save3dPreset')?.addEventListener('click',()=>{localStorage.setItem(cameraKey,JSON.stringify({theta,phi,radius}));toast('Posição 3D salva como predefinição.')});
  function hitAt(e){const r=renderer.domElement.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;ray.setFromCamera(mouse,camera);return ray.intersectObjects(car.children,true).find(h=>h.object.userData.inspection)}
  renderer.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};drag=false;renderer.domElement.setPointerCapture(e.pointerId)});
- renderer.domElement.addEventListener('pointermove',e=>{if(down){const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.hypot(dx,dy)>4)drag=true;theta-=dx*.009;phi=clamp(phi+dy*.007,.42,1.46);down={x:e.clientX,y:e.clientY};cam();preview.style.opacity='0'}else{hover=hitAt(e);if(hover){preview.style.left=e.offsetX+'px';preview.style.top=e.offsetY+'px';preview.style.opacity='1'}else preview.style.opacity='0'}});
+ renderer.domElement.addEventListener('pointermove',e=>{if(down){const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.hypot(dx,dy)>4)drag=true;theta-=dx*.009;phi=clamp(phi+dy*.007,.42,1.46);down={x:e.clientX,y:e.clientY};cam();localStorage.setItem(cameraKey,JSON.stringify({theta,phi,radius}));preview.style.opacity='0'}else{hover=hitAt(e);if(hover){preview.style.left=e.offsetX+'px';preview.style.top=e.offsetY+'px';preview.style.opacity='1'}else preview.style.opacity='0'}});
  renderer.domElement.addEventListener('pointerup',e=>{if(!drag){const h=hitAt(e);if(h)addMark(projectHit(h,car))}down=null;drag=false});
  renderer.domElement.addEventListener('pointerleave',()=>{down=null;preview.style.opacity='0'});
- renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();radius=clamp(radius*(e.deltaY>0?1.08:.92),5.2,10);cam()},{passive:false});
+ renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();radius=clamp(radius*(e.deltaY>0?1.08:.92),5.2,10);cam();localStorage.setItem(cameraKey,JSON.stringify({theta,phi,radius}))},{passive:false});
  function animate(){renderer.render(scene,camera);requestAnimationFrame(animate)}animate();
  const ro=new ResizeObserver(()=>{const w=stage.clientWidth,h=stage.clientHeight;camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix();renderer.setSize(w,h)});ro.observe(stage);
  viewer={scene,camera,renderer,car,ro};
 }
 window.buildInspectionViews=function(){
- carStage.innerHTML=`<section class="model3d-shell"><div class="model3d-head"><div><b>Veículo 3D · marcação livre</b><small>Arraste para girar 360°. Use a roda do mouse para zoom. Clique na carroceria para registrar B · Riscado.</small></div><button type="button" class="btn" id="show2dMapping">Ver projeção 2D</button></div><div class="model3d-stage" id="model3dStage"><span class="model-mark-preview">B</span></div><div class="model3d-map hidden" id="model3dMap">${INSPECTION_VIEWS.map(v=>`<article class="vehicle-view"><h4>${v.label}</h4><img src="${v.image}" alt="${v.label}">${inspectionMarks.filter(m=>m.view_id===v.id).map(m=>`<button type="button" class="damage-dot marked type-${String(m.damage_type||'B').toLowerCase()}" style="left:${m.x}%;top:${m.y}%" data-inspection-point="${m.point_id}">${m.damage_type||'B'}</button>`).join('')}</article>`).join('')}</div></section>`;
+ carStage.innerHTML=`<section class="model3d-shell"><div class="model3d-head"><div><b>Veículo 3D · marcação livre</b><small>Arraste para girar 360°. Use a roda do mouse para zoom. Clique na carroceria para registrar B · Riscado.</small></div><div class="model3d-actions"><button type="button" class="btn tiny" data-camera-preset="default">Perspectiva</button><button type="button" class="btn tiny" data-camera-preset="front">Frente</button><button type="button" class="btn tiny" data-camera-preset="left">Esquerda</button><button type="button" class="btn tiny" data-camera-preset="right">Direita</button><button type="button" class="btn tiny" data-camera-preset="rear">Traseira</button><button type="button" class="btn tiny" data-camera-preset="top">Teto</button><button type="button" class="btn tiny" id="save3dPreset">Salvar posição</button><button type="button" class="btn" id="show2dMapping">Ver projeção 2D</button></div></div><div class="model3d-stage" id="model3dStage"><span class="model-mark-preview">B</span></div><div class="model3d-map hidden" id="model3dMap">${INSPECTION_VIEWS.map(v=>`<article class="vehicle-view"><h4>${v.label}</h4><img src="${v.image}" alt="${v.label}">${inspectionMarks.filter(m=>m.view_id===v.id).map(m=>`<button type="button" class="damage-dot marked type-${String(m.damage_type||'B').toLowerCase()}" style="left:${m.x}%;top:${m.y}%" data-inspection-point="${m.point_id}">${m.damage_type||'B'}</button>`).join('')}</article>`).join('')}</div></section>`;
  document.getElementById('show2dMapping').onclick=e=>{const map=document.getElementById('model3dMap');map.classList.toggle('hidden');e.currentTarget.textContent=map.classList.contains('hidden')?'Ver projeção 2D':'Ocultar projeção 2D'};
  init(document.getElementById('model3dStage'));renderDamageList();
 };
