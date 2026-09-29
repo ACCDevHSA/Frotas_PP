@@ -127,20 +127,29 @@ async function finishReservation(requestId){
 async function deleteFleetRequest(requestId){
   const request=requests.find(r=>r.id===requestId);
   if(!request)return toast('Solicitação não localizada.');
+  if(!online)return toast('Conecte-se ao Supabase para excluir definitivamente a solicitação.');
   const vehicle=vehicles.find(v=>v.id===request.vehicle_id)||{};
   const label=[vehicle.model,vehicle.plate].filter(Boolean).join(' - ')||'esta solicitação';
   if(!window.confirm(`Excluir definitivamente ${label}? A solicitação e seus checklists serão apagados do Supabase. Esta ação não pode ser desfeita.`))return;
-  if(online){
-    const {error:inspectionError}=await db.from('vehicle_inspections').delete().eq('request_id',requestId);
-    if(inspectionError)return toast('Erro ao excluir os checklists: '+inspectionError.message);
-    const {error:requestError}=await db.from('fleet_requests').delete().eq('id',requestId);
-    if(requestError)return toast('Erro ao excluir a solicitação: '+requestError.message);
+  const deleteButton=document.querySelector(`[data-delete-request="${requestId}"]`);
+  if(deleteButton){deleteButton.disabled=true;deleteButton.textContent='…'}
+  try{
+    const {data,error}=await db.rpc('delete_fleet_request_cascade',{p_request_id:requestId});
+    if(error)throw error;
+    if(data!==true)throw new Error('O Supabase não confirmou a exclusão do registro.');
+    const {data:remaining,error:verifyError}=await db.from('fleet_requests').select('id').eq('id',requestId).maybeSingle();
+    if(verifyError)throw verifyError;
+    if(remaining)throw new Error('O registro continua no Supabase. Verifique a função de exclusão e as permissões RLS.');
+    inspections=inspections.filter(x=>x.request_id!==requestId);
+    requests=requests.filter(r=>r.id!==requestId);
+    persist();
+    render();
+    toast('Solicitação excluída definitivamente do Supabase.');
+  }catch(error){
+    console.error('Falha ao excluir solicitação:',error);
+    toast('Não foi possível excluir do Supabase: '+(error?.message||error));
+    if(deleteButton){deleteButton.disabled=false;deleteButton.textContent='🗑'}
   }
-  inspections=inspections.filter(x=>x.request_id!==requestId);
-  requests=requests.filter(r=>r.id!==requestId);
-  persist();
-  render();
-  toast('Solicitação excluída definitivamente.');
 }
 function render(){let q=(searchCards.value||'').toLowerCase(),list=vehicles.filter(v=>Object.values(v).join(' ').toLowerCase().includes(q));cards.innerHTML=list.map(v=>`<article class="vehicle-card" tabindex="0" data-id="${v.id}"><div class="vehicle-top"><span class="project">${esc(v.project)}</span>${vehicleAvailabilityHTML(v.id)}</div><h3>${esc(v.model)}</h3><div class="variant">${esc(v.version)}</div><div class="facts"><div><span>Placa</span><b>${esc(v.plate)}</b></div><div><span>Cor</span><b>${esc(v.color)}</b></div><div><span>Ano / Modelo</span><b>${esc(v.year_model)}</b></div><div><span>Rodízio</span><b>${esc(v.rotation_day)}</b></div>${vehicleCurrentUserHTML(v.id)}${usageRows(v.id)}</div><button class="btn primary card-request" data-request="${v.id}">＋ Nova solicitação</button>${(()=>{let r=requests.filter(r=>r.vehicle_id===v.id&&r.status!=='CANCELLED'&&new Date(r.end_at)>=new Date()).sort((a,b)=>new Date(a.start_at)-new Date(b.start_at))[0];const current=currentVehicleReservation(v.id);return r?`<div class="document-actions"><button class="btn" data-contract="${r.id}">Baixar contrato PDF</button>${cardChecklistActions(r)}${current&&current.id===r.id?`<button class="btn finalize-reservation" data-finish-reservation="${r.id}">Finalizar Reserva</button>`:''}</div>`:''})()}</article>`).join('');renderFleetTimeline();updateRequestsPendingBadge();fleetBody.innerHTML=vehicles.map(v=>`<tr data-id="${v.id}">${fields.map(f=>`<td contenteditable data-field="${f}">${esc(v[f])}</td>`).join('')}<td><button class="btn danger" data-delete="${v.id}">Excluir</button></td></tr>`).join('');userBody.innerHTML=adminUsers.length?adminUsers.map(u=>`<tr><td>${esc(u.full_name)}</td><td>${esc(u.employee_number)}</td><td>${esc(u.department)}</td><td>${esc(u.job_title)}</td><td>${esc(u.cpf_masked)}</td><td>${esc(u.cnh_masked)}</td><td>${u.sharepoint_url?`<a class="btn primary sharepoint-btn" href="${esc(u.sharepoint_url)}" target="_blank" rel="noopener noreferrer">Abrir pasta</a>`:'-'}</td><td>${u.active?'ATIVO':'INATIVO'}</td><td><button class="btn" data-edit-user="${u.id}">Editar</button> <button class="btn danger" data-toggle-user="${u.id}" data-active="${!u.active}">${u.active?'Inativar':'Ativar'}</button></td></tr>`).join(''):'<tr><td colspan="9">Nenhum usuário cadastrado ou acesso negado.</td></tr>';requestUser.innerHTML='<option value="">Selecione o usuário</option>'+userOptions.map(u=>`<option value="${u.id}">${esc(u.full_name)} • ${esc(u.employee_number)} • ${esc(u.department)}</option>`).join('');requestBody.innerHTML=requests.map(r=>{
   let v=vehicles.find(v=>v.id===r.vehicle_id)||{},u=userOptions.find(u=>u.id===r.fleet_user_id)||adminUsers.find(u=>u.id===r.fleet_user_id)||{},state=pendingChecklistState(r),pending=String(r.status||'').toUpperCase()!=='CANCELLED'&&new Date(r.end_at)<new Date()&&state.pending;
