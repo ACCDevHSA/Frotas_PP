@@ -135,12 +135,13 @@ async function finishReservation(requestId){
   const missing=[!state.withdrawalDone?'Retirada':null,!state.returnDone?'Devolução':null].filter(Boolean).join(' e ');
   const warning=missing?`Há checklist pendente: ${missing}. Ao finalizar, o veículo ficará disponível e a pendência será mantida na aba Solicitações. Deseja continuar?`:'Ao finalizar, o veículo ficará disponível e a reserva será removida do calendário. Deseja continuar?';
   if(!window.confirm(warning))return;
-  const previousEnd=r.end_at,previousStatus=r.status;
+  const previousEnd=r.end_at;
   r.end_at=now.toISOString();
-  r.status='FINISHED';
+  /* O status CONCLUDED e calculado dinamicamente por rStatus() quando end_at fica no passado.
+     Nao gravamos FINISHED porque esse valor nao pertence ao constraint fleet_requests_status_check. */
   if(online){
-    const {error}=await db.from('fleet_requests').update({end_at:r.end_at,status:'FINISHED'}).eq('id',r.id);
-    if(error){r.end_at=previousEnd;r.status=previousStatus;return toast('Erro ao finalizar reserva: '+error.message)}
+    const {error}=await db.from('fleet_requests').update({end_at:r.end_at}).eq('id',r.id);
+    if(error){r.end_at=previousEnd;return toast('Erro ao finalizar reserva: '+error.message)}
   }
   persist();
   await load();
