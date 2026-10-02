@@ -268,8 +268,8 @@ function canvasImage(src){return new Promise((ok,no)=>{const i=new Image();i.cro
   pdfText(page,bold,'ASSINATURAS',24,top-228,7.2,navy);
   page.drawLine({start:{x:24,y:signatureY},end:{x:269,y:signatureY},thickness:.7,color:muted});
   page.drawLine({start:{x:302,y:signatureY},end:{x:547,y:signatureY},thickness:.7,color:muted});
-  pdfText(page,font,'Comodante',24,signatureY-11,6.5,navy);
-  pdfText(page,font,'Comodatário',302,signatureY-11,6.5,navy);
+  pdfText(page,font,'Usuário',24,signatureY-11,6.5,navy);
+  pdfText(page,font,'Vistoriador',302,signatureY-11,6.5,navy);
  }
  page.drawRectangle({x:0,y:832,width:595.28,height:10,color:blue});
  pdfText(page,bold,isFinal?'CHECKLIST DEVOLUÇÃO FINAL':'CHECKLIST DE RETIRADA',24,806,18,navy);
