@@ -209,34 +209,19 @@ main{padding:24px 28px}.topbar h1{font-size:25px}.kpi,.panel,.vehicle-card,.time
 
 
 
-<style id="fleet-reservation-list-v8-style">
-/* Simplified reservation timeline: vehicle rows and stacked reservation bars. */
-.calendar-weekdays{display:none!important}
-.calendar-scroll{overflow:visible!important;padding:0!important}
-.fleet-reservation-timeline{min-width:0!important;width:100%;background:var(--card)}
-.fleet-list-header,.fleet-list-row{display:grid;grid-template-columns:minmax(190px,26%) minmax(0,1fr)}
-.fleet-list-header{background:#272d3e;color:#fff;font-size:.7rem;font-weight:900;text-transform:uppercase}
-.fleet-list-header>div{padding:11px 14px;border-right:1px solid rgba(255,255,255,.16)}
-.fleet-list-row{border-bottom:1px solid var(--line);background:var(--card)}
-.fleet-list-row:hover{background:color-mix(in srgb,var(--accent) 3%,var(--card))}
-.fleet-list-vehicle{padding:14px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;min-width:0}
-.fleet-list-vehicle strong,.fleet-list-vehicle span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fleet-list-vehicle strong{font-size:.84rem;color:var(--text)}
-.fleet-list-vehicle span{margin-top:4px;color:var(--muted);font-size:.7rem}
-.fleet-list-reservations{display:grid;align-content:start;gap:7px;padding:10px 12px;min-height:62px}
-.fleet-list-booking{width:100%;min-height:38px;padding:7px 11px;border:0;border-left:5px solid rgba(255,255,255,.88);border-radius:7px;color:#fff;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,.12);transition:filter .15s ease,transform .15s ease}
-.fleet-list-booking:hover{filter:brightness(1.06);transform:translateY(-1px)}
-.fleet-list-booking-main{min-width:0;display:flex;align-items:center;gap:8px}
-.fleet-list-booking strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.72rem;font-weight:900}
-.fleet-list-booking-status{flex:0 0 auto;font-size:.58rem;font-weight:850;opacity:.88;text-transform:uppercase}
-.fleet-list-booking-end{flex:0 0 auto;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.2);font-size:.64rem;font-weight:900;white-space:nowrap}
-.fleet-list-booking.cancelled{opacity:.58;filter:saturate(.55);text-decoration:line-through}
-.fleet-list-booking.concluded{opacity:.76}
-.fleet-list-empty{display:flex;align-items:center;min-height:42px;color:var(--muted);font-size:.68rem;font-style:italic}
-.fleet-list-legend{display:flex;flex-wrap:wrap;gap:8px;padding:11px 12px;border-top:1px solid var(--line);background:var(--card)}
-.fleet-list-legend-item{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;color:var(--text);font-size:.65rem;font-weight:750}
-.fleet-list-legend-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
-@media(max-width:700px){.fleet-list-header,.fleet-list-row{grid-template-columns:minmax(125px,34%) minmax(0,1fr)}.fleet-list-booking{align-items:flex-start;flex-direction:column;gap:5px}.fleet-list-booking-end{align-self:flex-start}.fleet-list-vehicle{padding:10px}}
+
+
+<style id="fleet-reservation-contract-v9-style">
+/* Contract-style reservation timeline: one row per reservation. */
+.calendar-weekdays{display:none!important}.calendar-scroll{overflow-x:auto!important;padding:0!important}.fleet-reservation-timeline{min-width:980px!important;width:100%;background:var(--card)}
+.reservation-contract-head,.reservation-contract-row{display:grid;grid-template-columns:minmax(205px,1.05fr) minmax(520px,4.7fr) minmax(165px,1.1fr)}
+.reservation-contract-head{background:#0d667c;color:#fff;font-size:.69rem;font-weight:900;text-transform:uppercase}.reservation-contract-head>div{padding:8px 11px;border-right:1px solid rgba(255,255,255,.22)}
+.reservation-contract-row{min-height:61px;border-bottom:1px solid var(--line);background:var(--card)}.reservation-contract-row:hover{background:color-mix(in srgb,var(--accent) 3%,var(--card))}
+.reservation-vehicle{padding:9px 11px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;min-width:0}.reservation-vehicle strong,.reservation-vehicle span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.reservation-vehicle strong{font-size:.79rem;color:var(--text)}.reservation-vehicle span{margin-top:3px;color:var(--muted);font-size:.66rem}.reservation-user-pill{display:inline-flex;align-self:flex-start;margin-top:5px;padding:2px 7px;border:1px solid currentColor;border-radius:999px;font-size:.56rem;font-weight:850}
+.reservation-lifetime{padding:8px 11px;border-right:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px;min-width:0}.reservation-dates{min-width:175px;color:var(--muted);font-size:.63rem;line-height:1.45}.reservation-dates b{color:var(--text)}
+.reservation-track{position:relative;height:16px;border-radius:999px;background:#d8dde3;overflow:visible}.reservation-segment{position:absolute;top:3px;height:10px;min-width:8px;border:0;border-radius:999px;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.04)}.reservation-segment:hover{filter:brightness(1.08);transform:scaleY(1.2)}.reservation-start-pin,.reservation-end-pin{position:absolute;top:-3px;width:2px;height:22px;background:#27364a}.reservation-start-pin{left:0}.reservation-end-pin{right:0}.reservation-end-pin:after{content:'Fim';position:absolute;right:-8px;top:-15px;color:var(--text);font-size:.54rem;font-weight:850}
+.reservation-alert{padding:9px 11px;display:flex;flex-direction:column;justify-content:center}.reservation-alert strong{font-size:.74rem;color:#00856f}.reservation-alert span{margin-top:3px;color:var(--muted);font-size:.61rem;font-weight:800;text-transform:uppercase}.reservation-alert.overdue strong{color:var(--danger)}.reservation-contract-empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:760px){.fleet-reservation-timeline{min-width:820px!important}.reservation-contract-head,.reservation-contract-row{grid-template-columns:180px minmax(450px,1fr) 150px}.reservation-dates{min-width:155px}}
 </style>
 
 </head><body><div class="reservation-finished-popup" id="reservationFinishedPopup" hidden role="dialog" aria-modal="true" aria-labelledby="reservationFinishedTitle">
@@ -457,30 +442,31 @@ document.querySelectorAll('[data-request-tab]').forEach(btn=>btn.addEventListene
 requestForm.onsubmit=async e=>{e.preventDefault();let x=Object.fromEntries(new FormData(e.target));if(new Date(x.end_at)<=new Date(x.start_at))return toast('A data final deve ser posterior à inicial.');let conflict=requests.some(r=>r.vehicle_id===x.vehicle_id&&r.status!=='CANCELLED'&&new Date(x.start_at)<new Date(r.end_at)&&new Date(x.end_at)>new Date(r.start_at));if(conflict)return toast('Veículo já reservado nesse período.');let u=userOptions.find(u=>u.id===x.fleet_user_id),r={id:crypto.randomUUID(),...x,requester_name:u?.full_name||'',status:'RESERVED',created_at:new Date().toISOString()};requests.unshift(r);await saveRequest(r);e.target.reset();closeM('requestModal');await load();toast('Solicitação registrada. Contrato disponível no card.');setTimeout(()=>downloadContract(r.id),250)};sidebarToggle.onclick=()=>setSidebarCollapsed(!appView.classList.contains('sidebar-collapsed'));setSidebarCollapsed(localStorage.getItem('pp_sidebar_collapsed')==='true',false);simpleLoginForm.onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),email=String(f.email||'').trim().toLowerCase(),password=String(f.password||'');authMessage.textContent='Verificando acesso...';authMessage.className='auth-message';try{await ensureAnonymousSession();const {data,error}=await db.rpc('authenticate_fleet_app_user',{p_email:email,p_password:password});if(error)throw error;if(!data){authMessage.textContent='E-mail ou senha incorretos, ou acesso inativo.';authMessage.className='auth-message error';return}applyAccessMode('registered',email);await load()}catch(err){console.error(err);authMessage.textContent='Não foi possível validar o acesso. Contatar o administrador.';authMessage.className='auth-message error'}};visitorAccess.onclick=async()=>{try{await ensureAnonymousSession();await db.rpc('register_fleet_visitor_access');applyAccessMode('visitor');await load()}catch(err){console.error(err);authMessage.textContent='Não foi possível iniciar o acesso de visitante.';authMessage.className='auth-message error'}};logoutButton.onclick=returnToAccess;async function bootFleetAccess(){const mobile=document.documentElement.classList.contains('mobile-device');if(!mobile){returnToAccess();return}accessView.hidden=true;appView.classList.remove('hidden');authMessage.textContent='';try{await ensureAnonymousSession();await db.rpc('register_fleet_visitor_access');applyAccessMode('visitor');await load()}catch(err){console.error(err);appView.classList.add('hidden');accessView.hidden=false;authMessage.textContent='Não foi possível iniciar o acesso mobile. Utilizar “Entrar como visitante”.';authMessage.className='auth-message error'}}bootFleetAccess();setInterval(()=>{if(accessMode!=='locked')render()},60000);
 </script>
 
-<script id="fleet-reservation-list-v8">
-/* One row per vehicle. Reservations are stacked, colored by user, showing only the end date. */
+
+
+
+
+
+<script id="fleet-reservation-contract-v9">
+/* One row per reservation. Same-vehicle reservations continue on the same monthly scale with user colors. */
 (function(){
-  const USER_COLORS=['#2563eb','#c8102e','#7c3aed','#059669','#d97706','#0891b2','#db2777','#4f46e5','#65a30d','#ea580c','#0f766e','#9333ea'];
-  function reservationUserKey(r){return String(r.fleet_user_id||timelineUser(r)||r.requester_name||'Usuário').trim().toLowerCase()}
-  function reservationUserColor(r){const key=reservationUserKey(r);let hash=0;for(let i=0;i<key.length;i++)hash=((hash<<5)-hash)+key.charCodeAt(i)|0;return USER_COLORS[Math.abs(hash)%USER_COLORS.length]}
+  const COLORS=['#2389d7','#00a49a','#c8102e','#7c3aed','#059669','#d97706','#db2777','#4f46e5','#65a30d','#ea580c','#0f766e','#9333ea'];
+  function userKey(r){return String(r.fleet_user_id||timelineUser(r)||r.requester_name||'Usuário').trim().toLowerCase()}
+  function userColor(r){const k=userKey(r);let h=0;for(let i=0;i<k.length;i++)h=((h<<5)-h)+k.charCodeAt(i)|0;return COLORS[Math.abs(h)%COLORS.length]}
   renderFleetTimeline=function(){
     const host=document.getElementById('fleetTimeline');if(!host)return;
-    const vehicleFilter=document.getElementById('calendarVehicleFilter'),userFilter=document.getElementById('calendarUserFilter');
-    if(vehicleFilter){vehicleFilter.innerHTML='<option value="">Todos os veículos</option>'+vehicles.slice().sort((a,b)=>String(a.model||'').localeCompare(String(b.model||''),'pt-BR')).map(v=>`<option value="${esc(v.id)}">${esc(v.model||'Veículo')} · ${esc(v.plate||'-')}</option>`).join('');vehicleFilter.value=calendarVehicleFilterValue}
-    if(userFilter){const ids=[...new Set(requests.map(r=>r.fleet_user_id).filter(Boolean))],listedUsers=ids.map(id=>userOptions.find(u=>u.id===id)||adminUsers.find(u=>u.id===id)).filter(Boolean).sort((a,b)=>String(a.full_name||'').localeCompare(String(b.full_name||''),'pt-BR'));userFilter.innerHTML='<option value="">Todos os usuários</option>'+listedUsers.map(u=>`<option value="${esc(u.id)}">${esc(u.full_name||'Usuário')}</option>`).join('');userFilter.value=calendarUserFilterValue}
-    const monthStart=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth(),1),monthEnd=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,0,23,59,59,999);
-    document.getElementById('timelinePeriod').textContent=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(monthStart).replace(/^./,c=>c.toUpperCase())+' · reservas por veículo';
-    const valid=requests.filter(r=>new Date(r.end_at)>=monthStart&&new Date(r.start_at)<=monthEnd&&(!calendarVehicleFilterValue||String(r.vehicle_id)===calendarVehicleFilterValue)&&(!calendarUserFilterValue||String(r.fleet_user_id)===calendarUserFilterValue));
-    let rowVehicles=vehicles.slice();if(calendarVehicleFilterValue)rowVehicles=rowVehicles.filter(v=>String(v.id)===calendarVehicleFilterValue);rowVehicles.sort((a,b)=>String(a.model||'').localeCompare(String(b.model||''),'pt-BR'));
-    const header='<div class="fleet-list-header"><div>Veículo</div><div>Reservas</div></div>';
-    const rows=rowVehicles.map(v=>{
-      const vr=valid.filter(r=>String(r.vehicle_id)===String(v.id)).sort((a,b)=>new Date(a.start_at)-new Date(b.start_at));
-      const bars=vr.map(r=>{const status=rStatus(r),cancelled=status==='CANCELLED',concluded=status==='CONCLUDED',color=reservationUserColor(r),user=timelineUser(r)||shortCalendarUser(r),dateKey=calendarKey(startOfDay(new Date(r.start_at))),endLabel=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(new Date(r.end_at));return `<button type="button" class="fleet-list-booking calendar-day has-reservations ${cancelled?'cancelled':''} ${concluded?'concluded':''}" data-calendar-date="${dateKey}" style="background:${color};border-left-color:${color}" title="${esc((v.model||'Veículo')+' | '+user+' | termina em '+endLabel+' | '+calendarStatusPt(status))}"><span class="fleet-list-booking-main"><strong>${esc(user)}</strong><span class="fleet-list-booking-status">${esc(calendarStatusPt(status))}</span></span><span class="fleet-list-booking-end">Termina ${esc(endLabel)}</span></button>`}).join('');
-      return `<div class="fleet-list-row"><div class="fleet-list-vehicle"><strong>${esc(v.model||'Veículo')}</strong><span>${esc(v.plate||'-')} · ${esc(v.version||'')}</span></div><div class="fleet-list-reservations">${bars||'<div class="fleet-list-empty">Sem reservas neste mês</div>'}</div></div>`;
+    const vf=document.getElementById('calendarVehicleFilter'),uf=document.getElementById('calendarUserFilter');
+    if(vf){vf.innerHTML='<option value="">Todos os veículos</option>'+vehicles.slice().sort((a,b)=>String(a.model||'').localeCompare(String(b.model||''),'pt-BR')).map(v=>`<option value="${esc(v.id)}">${esc(v.model||'Veículo')} · ${esc(v.plate||'-')}</option>`).join('');vf.value=calendarVehicleFilterValue}
+    if(uf){const ids=[...new Set(requests.map(r=>r.fleet_user_id).filter(Boolean))],us=ids.map(id=>userOptions.find(u=>u.id===id)||adminUsers.find(u=>u.id===id)).filter(Boolean).sort((a,b)=>String(a.full_name||'').localeCompare(String(b.full_name||''),'pt-BR'));uf.innerHTML='<option value="">Todos os usuários</option>'+us.map(u=>`<option value="${esc(u.id)}">${esc(u.full_name||'Usuário')}</option>`).join('');uf.value=calendarUserFilterValue}
+    const start=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth(),1),end=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,0,23,59,59,999),span=end-start;
+    document.getElementById('timelinePeriod').textContent=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(start).replace(/^./,c=>c.toUpperCase())+' · uma linha por reserva';
+    const valid=requests.filter(r=>new Date(r.end_at)>=start&&new Date(r.start_at)<=end&&(!calendarVehicleFilterValue||String(r.vehicle_id)===calendarVehicleFilterValue)&&(!calendarUserFilterValue||String(r.fleet_user_id)===calendarUserFilterValue)).sort((a,b)=>{const va=vehicles.find(v=>String(v.id)===String(a.vehicle_id))||{},vb=vehicles.find(v=>String(v.id)===String(b.vehicle_id))||{};return String(va.model||'').localeCompare(String(vb.model||''),'pt-BR')||new Date(a.start_at)-new Date(b.start_at)});
+    const head='<div class="reservation-contract-head"><div>Veículo / reserva</div><div>Período da reserva</div><div>Término</div></div>';
+    const rows=valid.map(r=>{
+      const v=vehicles.find(x=>String(x.id)===String(r.vehicle_id))||{},rawA=new Date(r.start_at),rawB=new Date(r.end_at),a=rawA<start?start:rawA,b=rawB>end?end:rawB,left=Math.max(0,Math.min(100,((a-start)/span)*100)),right=Math.max(left,Math.min(100,((b-start)/span)*100)),width=Math.max(.8,right-left),color=userColor(r),user=timelineUser(r)||shortCalendarUser(r),status=rStatus(r),dateKey=calendarKey(startOfDay(rawA<start?start:rawA)),remaining=Math.ceil((rawB-new Date())/86400000),endText=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}).format(rawB),startText=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}).format(rawA);
+      return `<div class="reservation-contract-row"><div class="reservation-vehicle"><strong>${esc(v.model||'Veículo')} · ${esc(v.plate||'-')}</strong><span>${esc(v.version||'')}</span><span class="reservation-user-pill" style="color:${color}">${esc(user)}</span></div><div class="reservation-lifetime"><div class="reservation-dates">Início: <b>${esc(startText)}</b><br>Fim: <b>${esc(endText)}</b></div><div class="reservation-track"><span class="reservation-start-pin"></span><button type="button" class="reservation-segment calendar-day has-reservations" data-calendar-date="${dateKey}" style="left:${left}%;width:${width}%;background:${color}" title="${esc(user+' | '+startText+' a '+endText+' | '+calendarStatusPt(status))}"></button><span class="reservation-end-pin"></span></div></div><div class="reservation-alert ${remaining<0?'overdue':''}"><strong>${remaining>=0?remaining+' dias restantes':'Encerrada há '+Math.abs(remaining)+' dias'}</strong><span>${esc(calendarStatusPt(status))}</span></div></div>`;
     }).join('');
-    const uniqueUsers=[];valid.forEach(r=>{const key=reservationUserKey(r);if(!uniqueUsers.some(x=>x.key===key))uniqueUsers.push({key,name:timelineUser(r)||shortCalendarUser(r),color:reservationUserColor(r)})});
-    const legend=uniqueUsers.length?`<div class="fleet-list-legend">${uniqueUsers.map(u=>`<span class="fleet-list-legend-item"><i class="fleet-list-legend-dot" style="background:${u.color}"></i>${esc(u.name)}</span>`).join('')}</div>`:'';
-    host.className='month-calendar fleet-reservation-timeline';host.innerHTML=header+(rows||'<div class="fleet-timeline-empty">Nenhum veículo encontrado.</div>')+legend;
+    host.className='month-calendar fleet-reservation-timeline';host.innerHTML=head+(rows||'<div class="reservation-contract-empty">Nenhuma reserva encontrada para o período selecionado.</div>');
   };
   window.addEventListener('load',()=>setTimeout(()=>{try{renderFleetTimeline()}catch(e){console.error(e)}},0));
 })();
