@@ -224,6 +224,39 @@ main{padding:24px 28px}.topbar h1{font-size:25px}.kpi,.panel,.vehicle-card,.time
 @media(max-width:760px){.fleet-reservation-timeline{min-width:820px!important}.reservation-contract-head,.reservation-contract-row{grid-template-columns:180px minmax(450px,1fr) 150px}.reservation-dates{min-width:155px}}
 </style>
 
+
+<style id="fleet-reservation-wide-v10">
+/* Use the available viewport more efficiently */
+#dashboard{width:100%;max-width:none!important}
+#dashboard .calendar-shell{width:calc(100vw - 310px);max-width:none!important;margin-left:0;margin-right:0}
+.app.sidebar-collapsed #dashboard .calendar-shell{width:calc(100vw - 142px)}
+#dashboard .calendar-head{padding:14px 16px!important}
+#dashboard .calendar-scroll{width:100%;overflow-x:auto!important}
+#dashboard .fleet-reservation-timeline{width:100%!important;min-width:1180px!important}
+/* Give most of the horizontal area to the reservation bar */
+.reservation-contract-head,.reservation-contract-row{grid-template-columns:minmax(190px,.85fr) minmax(760px,6.4fr) minmax(135px,.8fr)!important}
+.reservation-contract-row{min-height:68px!important}
+.reservation-vehicle{padding:10px 12px!important}
+.reservation-lifetime{grid-template-columns:150px minmax(560px,1fr)!important;gap:18px!important;padding:10px 16px!important}
+.reservation-dates{min-width:0!important;font-size:.67rem!important;line-height:1.55!important}
+.reservation-track{height:20px!important}
+.reservation-segment{top:4px!important;height:12px!important}
+.reservation-start-pin,.reservation-end-pin{top:-2px!important;height:24px!important}
+.reservation-alert{padding:10px 12px!important}
+.reservation-alert strong{font-size:.78rem!important}
+@media(min-width:1500px){
+  main{padding-left:22px!important;padding-right:22px!important}
+  #dashboard .calendar-shell{width:calc(100vw - 294px)}
+  .app.sidebar-collapsed #dashboard .calendar-shell{width:calc(100vw - 126px)}
+  #dashboard .fleet-reservation-timeline{min-width:100%!important}
+  .reservation-contract-head,.reservation-contract-row{grid-template-columns:minmax(210px,.9fr) minmax(880px,7fr) minmax(150px,.85fr)!important}
+}
+@media(max-width:820px){
+  #dashboard .calendar-shell,.app.sidebar-collapsed #dashboard .calendar-shell{width:100%!important}
+  #dashboard .fleet-reservation-timeline{min-width:1000px!important}
+}
+</style>
+
 </head><body><div class="reservation-finished-popup" id="reservationFinishedPopup" hidden role="dialog" aria-modal="true" aria-labelledby="reservationFinishedTitle">
   <div class="reservation-finished-card">
     <div class="reservation-finished-icon">✓</div>
