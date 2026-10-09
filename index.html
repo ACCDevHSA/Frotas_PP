@@ -153,363 +153,17 @@ html.mobile-device body{font-size:13px;overflow-x:hidden}
 /* Histórico diário do Calendário de reservas */
 .calendar-day.has-reservations{cursor:pointer}.calendar-day.has-reservations:hover{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 65%,transparent);z-index:2}.calendar-day.has-reservations:focus{outline:2px solid var(--accent);outline-offset:-2px}.calendar-history-indicator{position:absolute;top:8px;left:8px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}.calendar-event.cancelled{opacity:.58;filter:saturate(.55);text-decoration:line-through}.calendar-event.concluded{opacity:.76}.calendar-history-modal-card{width:min(880px,96vw)}.calendar-history-list{display:grid;gap:10px;padding:16px 20px 20px}.calendar-history-card{display:grid;grid-template-columns:minmax(170px,.85fr) minmax(0,1.6fr) auto;gap:14px;padding:14px;border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;background:var(--card)}.calendar-history-card.cancelled{opacity:.72;border-left-color:var(--danger)}.calendar-history-card.concluded{border-left-color:var(--muted)}.calendar-history-vehicle h3{margin:0;font-size:.95rem}.calendar-history-vehicle small{display:block;margin-top:4px;color:var(--muted)}.calendar-history-data{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}.calendar-history-data div{min-width:0}.calendar-history-data span{display:block;color:var(--muted);font-size:.62rem;text-transform:uppercase;font-weight:850}.calendar-history-data b{display:block;margin-top:1px;font-size:.74rem;overflow-wrap:anywhere}.calendar-history-status{align-self:start;padding:5px 8px;border:1px solid var(--line);border-radius:99px;color:var(--text);font-size:.62rem;font-weight:900;white-space:nowrap}.calendar-history-empty{padding:34px 18px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center}.calendar-help b{color:var(--text)}@media(max-width:720px){.calendar-history-modal-card{max-height:94dvh}.calendar-history-list{padding:12px}.calendar-history-card{grid-template-columns:1fr;gap:10px}.calendar-history-data{grid-template-columns:1fr}.calendar-history-status{justify-self:start}}
 </style>
-<style id="hub-inspired-style">
-/* =========================================================
-   Visual layer inspired by HUB.html
-   Only presentation is overridden. IDs, forms, events,
-   Supabase integration and business rules remain unchanged.
-   ========================================================= */
-:root,
-html[data-theme="light"]{
-  --bg:#f5f6f8;
-  --soft:#f5f6f8;
-  --card:#ffffff;
-  --raise:#f3f4f6;
-  --text:#1f2937;
-  --muted:#778197;
-  --line:#e5e7eb;
-  --accent:#c8102e;
-  --success:#4f9d30;
-  --danger:#c8102e;
-  --warning:#d99016;
-  --nav:#8f0f1b;
-  --dark:#272d3e;
-  --shadow:0 1px 3px rgba(30,36,52,.08);
-}
-html[data-theme="dark"]{
-  --bg:#111827;
-  --soft:#0f172a;
-  --card:#182235;
-  --raise:#222f43;
-  --text:#f8fafc;
-  --muted:#aeb8c8;
-  --line:#334155;
-  --accent:#ef4056;
-  --success:#72b64e;
-  --danger:#ff6b7f;
-  --warning:#e5a52f;
-  --nav:#750d17;
-  --dark:#e5e7eb;
-  --shadow:0 4px 14px rgba(0,0,0,.18);
-}
-body{background:var(--soft);font-family:Inter,"Segoe UI",Arial,sans-serif}
-
-/* Sidebar and brand */
-.app{grid-template-columns:238px 1fr;transition:grid-template-columns .25s ease}
-.sidebar,
-html[data-theme="light"] .sidebar{
-  width:238px;
-  padding:18px 14px;
-  background:var(--nav);
-  color:#fff;
-  border-right:0;
-  box-shadow:none;
-  transition:width .25s ease,padding .25s ease;
-}
-.brand{height:48px;margin:0 0 34px;padding:0 7px;gap:11px}
-.mark{width:42px;height:42px;min-width:42px;border-radius:50%;box-shadow:none;border:0;background:#fff}
-.brand-copy b{font-size:13px;color:#fff}
-.brand-copy small{font-size:10px;color:#dac0c4}
-.compact-nav{margin-top:0!important;gap:5px!important}
-.compact-nav button{
-  min-height:40px!important;
-  padding:10px 12px!important;
-  border-radius:8px!important;
-  background:transparent!important;
-  color:#e6cfd3!important;
-  font-size:12px!important;
-  font-weight:700!important;
-}
-.compact-nav button:hover,.compact-nav button.active{
-  background:rgba(255,255,255,.13)!important;
-  color:#fff!important;
-}
-.nav-icon{width:22px;min-width:22px;font-size:17px}
-.side-bottom{margin-top:auto!important;color:#fff}
-.access-role-badge{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.09);color:#fff}
-.user-chip{color:#e2c6ca}
-.logout-button{border-color:rgba(255,255,255,.22)!important;background:rgba(255,255,255,.08)!important;color:#fff!important}
-.sidebar-spacer{display:none}
-
-/* Hamburger aligned with HUB behavior */
-.sidebar-toggle{
-  position:absolute;
-  right:7px;
-  top:54px;
-  width:36px;
-  height:34px;
-  z-index:40;
-  border:0;
-  border-radius:7px;
-  background:rgba(255,255,255,.12);
-  opacity:1;
-  gap:4px;
-  transition:background .2s ease,right .25s ease,transform .25s ease;
-}
-.sidebar-toggle span{width:16px;height:2px;background:#fff;transition:transform .25s ease,width .25s ease}
-.sidebar-toggle:hover{background:rgba(255,255,255,.22)}
-.app.sidebar-collapsed{grid-template-columns:72px 1fr}
-.app.sidebar-collapsed .sidebar{width:72px;padding-left:14px;padding-right:14px}
-.app.sidebar-collapsed .brand{justify-content:center;padding:0}
-.app.sidebar-collapsed .mark{width:42px;height:42px;min-width:42px}
-.app.sidebar-collapsed .sidebar-toggle{right:18px;top:54px}
-.app.sidebar-collapsed .compact-nav{margin-top:0!important}
-.app.sidebar-collapsed .compact-nav button{padding:10px 5px!important}
-.app.sidebar-collapsed .side-bottom{align-items:center}
-.app.sidebar-collapsed .logout-button{width:42px;min-width:42px;height:36px}
-
-/* Main header */
-main{padding:24px 28px}
-.topbar{align-items:flex-start}
-.eyebrow{color:#8a91a2;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-.topbar h1{margin:5px 0;font-size:25px;color:var(--text)}
-.subtitle{margin:0;color:var(--muted);font-size:12px}
-.theme-toggle,.source{border-radius:8px;padding:9px 12px;background:var(--card);border-color:#dfe2e8;color:#4c5468;font-size:11px}
-html[data-theme="dark"] .theme-toggle,html[data-theme="dark"] .source{border-color:var(--line);color:var(--text)}
-.source:before{color:var(--warning)}.source.ok:before{color:var(--success)}
-
-/* Components */
-.kpis{gap:12px;margin:22px 0 18px}
-.kpi,.panel,.vehicle-card,.timeline-shell,.pending-checklists{
-  border:1px solid var(--line);
-  border-radius:11px;
-  background:var(--card);
-  box-shadow:var(--shadow);
-}
-.kpi{padding:15px}
-.kpi small{font-size:9px;text-transform:uppercase;font-weight:800}
-.kpi strong{font-size:22px;margin:7px 0 3px}
-.kpi em{font-size:10px}
-.vehicle-grid{gap:14px}
-.vehicle-card{padding:16px;transition:transform .16s,border-color .16s,box-shadow .16s}
-.vehicle-card:hover,.vehicle-card:focus{border-color:var(--accent);box-shadow:0 5px 16px rgba(31,41,55,.10)}
-.project{color:var(--accent)}
-.status{color:var(--success)}.status.busy{color:var(--warning)}
-.section-head h2{font-size:15px}.section-head p{font-size:11px}
-
-/* Inputs and buttons */
-input,select,textarea{
-  border:1px solid #dfe2e8;
-  border-radius:8px;
-  background:#fff;
-  color:#4e566b;
-  font-size:12px;
-}
-html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{border-color:var(--line);background:var(--raise);color:var(--text)}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,16,46,.10)}
-.btn{
-  border:1px solid #dfe2e8;
-  border-radius:8px;
-  background:#fff;
-  color:#4c5468;
-  font-size:11px;
-  font-weight:700;
-}
-.btn:hover{border-color:#c8ced8;background:#fafbfc}
-.btn.primary{border-color:var(--dark);background:var(--dark);color:#fff}
-html[data-theme="dark"] .btn{border-color:var(--line);background:var(--card);color:var(--text)}
-html[data-theme="dark"] .btn.primary{border-color:var(--accent);background:var(--accent);color:#fff}
-.btn.danger{color:#b42318}
-
-/* Tables, calendar and dialogs */
-.panel{padding:8px;overflow:auto}
-th{background:#fafbfc;color:#606a80;font-size:9px;letter-spacing:.03em}
-html[data-theme="dark"] th{background:var(--raise);color:var(--muted)}
-th,td{padding:9px;border-bottom-color:#edf0f3;font-size:10px}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom-color:var(--line)}
-.timeline-shell{overflow:hidden}
-.timeline-head{padding:15px 16px}
-.calendar-day{background:#fff}
-.calendar-day.today{box-shadow:inset 0 0 0 2px var(--accent)}
-.calendar-day.today .calendar-day-number{background:var(--accent);color:#fff}
-.calendar-history-indicator{background:var(--accent);box-shadow:0 0 0 3px rgba(200,16,46,.15)}
-.calendar-event{border-radius:5px}
-.modal{background:rgba(31,41,55,.62)}
-.modal-card{border-radius:12px;background:var(--bg)}
-.login-card{border-radius:14px}
-.access-screen{background:linear-gradient(135deg,#f5f6f8,#eceff3)}
-.access-brand .eyebrow{color:var(--accent)}
-
-/* Tabs and notices */
-.request-status-tabs{border-radius:10px;box-shadow:var(--shadow)}
-.request-status-tab{border-radius:8px}
-.request-status-tab.active{border-color:rgba(200,16,46,.25);background:rgba(200,16,46,.08);color:var(--accent)}
-.request-status-tab.active span{background:var(--accent);color:#fff}
-.requests-controls{border-radius:10px;box-shadow:var(--shadow)}
-.nav-notification{border-color:var(--nav)}
-
-@media(max-width:820px){
-  .sidebar,.app.sidebar-collapsed .sidebar{
-    background:var(--nav)!important;
-    border-bottom:0!important;
-  }
-  .sidebar .brand-copy b,.app.sidebar-collapsed .brand-copy b{color:#fff}
-  .sidebar .brand-copy small,.app.sidebar-collapsed .brand-copy small{color:#dac0c4}
-  main{padding:16px 12px calc(18px + env(safe-area-inset-bottom))!important}
-}
-</style>
-
-
-<style id="hub-style-final-adjustments">
-/* Final contrast and sidebar spacing adjustments */
-
-/* Any primary or dark-action button must keep readable light text */
-.btn.primary,
-button.btn.primary,
-a.btn.primary,
-button[style*="background:#272d3e"],
-button[style*="background: #272d3e"],
-button[style*="background:#1f2937"],
-button[style*="background: #1f2937"],
-button[style*="background:#111827"],
-button[style*="background: #111827"]{
-  color:#fff !important;
-}
-.btn.primary *,
-button.btn.primary *,
-a.btn.primary *{
-  color:inherit !important;
-}
-
-/* White notification bubble with red text in Solicitações */
-.requests-nav-button .nav-notification,
-#navRequests .nav-notification,
-.nav-notification{
-  background:#fff !important;
-  color:#c8102e !important;
-  border:1px solid rgba(200,16,46,.18) !important;
-  box-shadow:0 2px 7px rgba(55,0,10,.24) !important;
-}
-
-/* Move all sidebar menu tabs slightly downward */
-.compact-nav{
-  margin-top:18px !important;
-}
-.app.sidebar-collapsed .compact-nav{
-  margin-top:18px !important;
-}
-
-@media(max-width:820px){
-  .compact-nav,
-  .app.sidebar-collapsed .compact-nav{
-    margin-top:12px !important;
-  }
-}
-</style>
-
-
-<style id="hub-style-request-fixes-v3">
-/* 1. Solicitações: Exportar Excel with white label */
-#exportRequestsXlsx,
-#exportRequestsXlsx:hover,
-#exportRequestsXlsx:focus,
-#exportRequestsXlsx:active{
-  color:#fff !important;
-}
-#exportRequestsXlsx *{color:#fff !important;}
-
-/* 2. Pending checklist counters: exact horizontal and vertical centering */
-.pending-count,
-.requests-nav-button .nav-notification,
-#navRequests .nav-notification,
-.nav-notification{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  text-align:center !important;
-  line-height:1 !important;
-  padding-top:0 !important;
-  padding-bottom:0 !important;
-  box-sizing:border-box !important;
-  font-variant-numeric:tabular-nums;
-}
-
-/* 3. Smaller sidebar expand/collapse button */
-.sidebar-toggle{
-  width:28px !important;
-  height:28px !important;
-  min-width:28px !important;
-  min-height:28px !important;
-  padding:0 !important;
-  border-radius:6px !important;
-  gap:3px !important;
-}
-.sidebar-toggle span{
-  width:13px !important;
-  height:1.5px !important;
-}
-.app.sidebar-collapsed .sidebar-toggle{
-  right:22px !important;
-}
-</style>
-
-
-<style id="hub-style-collapsed-alignment-v4">
-/* Pixel-consistent alignment when the sidebar is collapsed */
-.app.sidebar-collapsed .sidebar{
-  align-items:center !important;
-}
-.app.sidebar-collapsed .brand{
-  width:44px !important;
-  margin-left:auto !important;
-  margin-right:auto !important;
-  justify-content:center !important;
-}
-.app.sidebar-collapsed .compact-nav{
-  width:44px !important;
-  margin-left:auto !important;
-  margin-right:auto !important;
-  justify-items:center !important;
-  align-items:center !important;
-}
-.app.sidebar-collapsed .compact-nav button,
-.app.sidebar-collapsed .compact-nav .requests-nav-button{
-  position:relative !important;
-  width:44px !important;
-  min-width:44px !important;
-  max-width:44px !important;
-  padding-left:0 !important;
-  padding-right:0 !important;
-  margin-left:auto !important;
-  margin-right:auto !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:0 !important;
-}
-.app.sidebar-collapsed .compact-nav .nav-icon{
-  width:22px !important;
-  min-width:22px !important;
-  margin:0 !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  text-align:center !important;
-}
-.app.sidebar-collapsed .sidebar-toggle{
-  left:50% !important;
-  right:auto !important;
-  transform:translateX(-50%) !important;
-}
-.app.sidebar-collapsed .side-bottom{
-  width:44px !important;
-  margin-left:auto !important;
-  margin-right:auto !important;
-  justify-items:center !important;
-  align-items:center !important;
-}
-.app.sidebar-collapsed .logout-button{
-  margin-left:auto !important;
-  margin-right:auto !important;
-}
-/* Keep the badge attached to Solicitações without moving its icon */
-.app.sidebar-collapsed .requests-nav-button .nav-notification{
-  position:absolute !important;
-  top:-5px !important;
-  right:-5px !important;
-  margin:0 !important;
-  z-index:3 !important;
-}
+<style id="hub-fleet-v5-style">
+:root,html[data-theme="light"]{--bg:#f5f6f8;--soft:#f5f6f8;--card:#fff;--raise:#f3f4f6;--text:#1f2937;--muted:#778197;--line:#e5e7eb;--accent:#c8102e;--success:#4f9d30;--danger:#c8102e;--warning:#d99016;--nav:#8f0f1b;--dark:#272d3e;--shadow:0 1px 3px rgba(30,36,52,.08)}
+html[data-theme="dark"]{--bg:#111827;--soft:#0f172a;--card:#182235;--raise:#222f43;--text:#f8fafc;--muted:#aeb8c8;--line:#334155;--accent:#ef4056;--success:#72b64e;--danger:#ff6b7f;--warning:#e5a52f;--nav:#750d17;--dark:#e5e7eb;--shadow:0 4px 14px rgba(0,0,0,.18)}
+body{background:var(--soft);font-family:Inter,"Segoe UI",Arial,sans-serif}.app{grid-template-columns:238px 1fr;transition:grid-template-columns .25s ease}.sidebar,html[data-theme="light"] .sidebar{width:238px;padding:18px 14px;background:var(--nav);color:#fff;border-right:0;box-shadow:none;transition:width .25s ease,padding .25s ease}.brand{height:48px;margin:0 0 34px;padding:0 7px;gap:11px}.mark{width:42px;height:42px;min-width:42px;border-radius:50%;box-shadow:none;border:0;background:#fff}.brand-copy b{font-size:13px;color:#fff}.brand-copy small{font-size:10px;color:#dac0c4}.compact-nav{margin-top:18px!important;gap:5px!important}.compact-nav button{min-height:40px!important;padding:10px 12px!important;border-radius:8px!important;background:transparent!important;color:#e6cfd3!important;font-size:12px!important;font-weight:700!important}.compact-nav button:hover,.compact-nav button.active{background:rgba(255,255,255,.13)!important;color:#fff!important}.nav-icon{width:22px;min-width:22px;font-size:17px}.side-bottom{margin-top:auto!important;color:#fff}.access-role-badge{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.09);color:#fff}.user-chip{color:#e2c6ca}.logout-button{border-color:rgba(255,255,255,.22)!important;background:rgba(255,255,255,.08)!important;color:#fff!important}.sidebar-spacer{display:none}.sidebar-toggle{position:absolute;right:7px;top:54px;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;padding:0!important;z-index:40;border:0;border-radius:6px!important;background:rgba(255,255,255,.12);opacity:1;gap:3px!important}.sidebar-toggle span{width:13px!important;height:1.5px!important;background:#fff}.app.sidebar-collapsed{grid-template-columns:72px 1fr}.app.sidebar-collapsed .sidebar{width:72px;padding-left:14px;padding-right:14px;align-items:center!important}.app.sidebar-collapsed .brand{width:44px!important;margin-left:auto!important;margin-right:auto!important;justify-content:center!important;padding:0}.app.sidebar-collapsed .compact-nav{width:44px!important;margin:18px auto 0!important;justify-items:center!important;align-items:center!important}.app.sidebar-collapsed .compact-nav button{position:relative!important;width:44px!important;min-width:44px!important;max-width:44px!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important}.app.sidebar-collapsed .compact-nav .nav-icon{width:22px!important;min-width:22px!important;margin:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}.app.sidebar-collapsed .sidebar-toggle{left:50%!important;right:auto!important;transform:translateX(-50%)!important}.app.sidebar-collapsed .side-bottom{width:44px!important;margin-left:auto!important;margin-right:auto!important;justify-items:center!important;align-items:center!important}.app.sidebar-collapsed .requests-nav-button .nav-notification{position:absolute!important;top:-5px!important;right:-5px!important;margin:0!important;z-index:3!important}
+/* Solicitações: label vertically centered and left aligned */
+.requests-nav-button{display:flex!important;align-items:center!important}.requests-nav-button .nav-label{flex:1 1 auto;text-align:left!important;line-height:1.2}.app.sidebar-collapsed .requests-nav-button .nav-label{flex:0 0 0}
+.nav-notification{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1!important;padding-top:0!important;padding-bottom:0!important;box-sizing:border-box!important;background:#fff!important;color:#c8102e!important;border:1px solid rgba(200,16,46,.18)!important;box-shadow:0 2px 7px rgba(55,0,10,.24)!important}#exportRequestsXlsx,#exportRequestsXlsx:hover,#exportRequestsXlsx:focus,#exportRequestsXlsx:active{color:#fff!important}.btn.primary,.btn.primary *{color:#fff!important}
+main{padding:24px 28px}.topbar h1{font-size:25px}.kpi,.panel,.vehicle-card,.timeline-shell,.pending-checklists{border:1px solid var(--line);border-radius:11px;background:var(--card);box-shadow:var(--shadow)}.btn{border-radius:8px}.btn.primary{border-color:var(--dark);background:var(--dark)}
+/* Reservation timeline, based on the uploaded contract timeline structure */
+.calendar-shell{overflow:hidden}.calendar-weekdays{display:none!important}.calendar-scroll{padding:0!important;overflow:auto!important}.fleet-reservation-timeline{min-width:980px;background:var(--card)}.fleet-timeline-header,.fleet-timeline-row{display:grid;grid-template-columns:minmax(205px,.95fr) minmax(720px,4.6fr)}.fleet-timeline-header{position:sticky;top:0;z-index:8;color:#fff;background:#272d3e;font-size:.69rem;font-weight:900;text-transform:uppercase}.fleet-timeline-header>div{padding:10px 12px;border-right:1px solid rgba(255,255,255,.16)}.fleet-timeline-days{display:grid;grid-template-columns:repeat(var(--days),minmax(30px,1fr));position:relative}.fleet-timeline-day-head{padding:8px 2px!important;border-right:1px solid rgba(255,255,255,.14)!important;text-align:center}.fleet-timeline-day-head small{display:block;margin-top:2px;opacity:.7;font-size:.56rem}.fleet-timeline-row{min-height:76px;border-bottom:1px solid var(--line);background:var(--card)}.fleet-timeline-row:hover{background:color-mix(in srgb,var(--accent) 3%,var(--card))}.fleet-timeline-vehicle{padding:12px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;min-width:0}.fleet-timeline-vehicle strong,.fleet-timeline-vehicle span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fleet-timeline-vehicle strong{font-size:.82rem}.fleet-timeline-vehicle span{margin-top:4px;color:var(--muted);font-size:.7rem}.fleet-timeline-track{position:relative;min-height:76px;display:grid;grid-template-columns:repeat(var(--days),minmax(30px,1fr));background:repeating-linear-gradient(to right,transparent 0,transparent calc((100% / var(--days)) - 1px),var(--line) calc((100% / var(--days)) - 1px),var(--line) calc(100% / var(--days)))}.fleet-timeline-cell{min-width:0;border:0;background:transparent}.fleet-timeline-cell.weekend{background:color-mix(in srgb,var(--accent) 4%,transparent)}.fleet-timeline-cell.today{box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent)}.fleet-booking-bar{position:absolute;top:12px;height:38px;min-width:25px;padding:6px 8px;border:0;border-left:4px solid rgba(255,255,255,.9);border-radius:7px;color:#fff;text-align:left;overflow:hidden;cursor:pointer;box-shadow:0 3px 9px rgba(0,0,0,.14);z-index:3}.fleet-booking-bar:hover{filter:brightness(1.06);transform:translateY(-1px)}.fleet-booking-bar strong,.fleet-booking-bar span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fleet-booking-bar strong{font-size:.68rem}.fleet-booking-bar span{margin-top:2px;font-size:.58rem;opacity:.92}.fleet-booking-bar.cancelled{opacity:.58;filter:saturate(.55);text-decoration:line-through}.fleet-booking-bar.concluded{opacity:.76}.fleet-timeline-empty{padding:32px;text-align:center;color:var(--muted)}.calendar-help{border-top:1px solid var(--line)}
+@media(max-width:820px){.sidebar,.app.sidebar-collapsed .sidebar{background:var(--nav)!important}.compact-nav,.app.sidebar-collapsed .compact-nav{margin-top:12px!important}main{padding:16px 12px calc(18px + env(safe-area-inset-bottom))!important}}
 </style>
 
 </head><body><div class="reservation-finished-popup" id="reservationFinishedPopup" hidden role="dialog" aria-modal="true" aria-labelledby="reservationFinishedTitle">
@@ -521,7 +175,7 @@ a.btn.primary *{
   </div>
 </div><section id="accessView" class="login access-screen"><div class="login-card"><div class="access-brand"><div class="mark"><img src="./favicon.png?v=3" alt="PP Fleet System"></div><div><div class="eyebrow">ACESSO AO SISTEMA</div><h1>PP Fleet System</h1><p>Selecionar uma forma de acesso para continuar.</p></div></div><form id="simpleLoginForm" class="simple-login-form"><label>E-mail<input type="email" name="email" required autocomplete="email" placeholder="nome@empresa.com"></label><label>Senha<input type="password" name="password" required autocomplete="current-password" placeholder="Informar a senha"></label><p class="auth-message" id="authMessage" aria-live="polite"></p><div class="login-actions"><button type="submit" class="btn primary compact-access-button">Entrar</button><button type="button" class="btn compact-access-button" id="visitorAccess">Entrar como visitante</button></div></form></div></section><div id="appView" class="app hidden"><aside class="sidebar" id="sidebar"><div class="brand"><div class="mark"><img src="./favicon.png?v=3" alt="PP Fleet System"></div><div class="brand-copy"><b>PP Fleet System</b><small>Product Planning</small></div><button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu lateral"><span></span><span></span><span></span></button></div><nav class="nav compact-nav"><button class="active" data-view="dashboard" title="Painel da Frota"><span class="nav-icon">▦</span><span class="nav-label">Painel da Frota</span></button><button data-view="fleet" title="Veículos da Frota"><span class="nav-icon">☷</span><span class="nav-label">Veículos da Frota</span></button><button data-view="users" title="Usuários"><span class="nav-icon">♙</span><span class="nav-label">Usuários</span></button><button data-view="requests" class="requests-nav-button" title="Solicitações"><span class="nav-icon">◷</span><span class="nav-label">Solicitações</span><span class="nav-notification" id="requestsPendingBadge" hidden>0</span></button></nav><div class="side-bottom"><div class="access-role-badge" id="accessRoleBadge">Acesso</div><div class="user-chip" id="accessIdentity"></div><button type="button" class="btn logout-button" id="logoutButton"><span class="logout-icon">↪</span><span class="logout-label">Sair</span></button></div><div class="sidebar-spacer" aria-hidden="true"></div></aside><main><header class="topbar"><div><div class="eyebrow">GESTÃO DE FROTA</div><h1 id="title">Painel da Frota</h1><p class="subtitle" id="subtitle">Disponibilidade e reservas em uma única visão.</p></div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-label="Alternar tema" title="Alternar tema">☀ Modo claro</button><div class="source" id="source">Conectando...</div></div></header>
 <section class="view active" id="dashboard"><div class="kpis"><article class="kpi"><small>Total</small><strong id="kTotal">0</strong><em>Veículos ativos</em></article><article class="kpi"><small>Disponíveis</small><strong id="kAvailable">0</strong><em>Prontos para uso</em></article><article class="kpi"><small>Reservados / em uso</small><strong id="kBusy">0</strong><em>Compromissos atuais</em></article><article class="kpi"><small>Solicitações</small><strong id="kRequests">0</strong><em>Registros ativos</em></article></div><div class="toolbar"><input id="searchCards" placeholder="Buscar modelo ou placa"></div><div class="section-head"><div><h2>Portfólio de veículos</h2><p>Clique no card para consultar os dados. A solicitação é iniciada pelo botão do próprio veículo.</p></div></div><div class="vehicle-grid" id="cards"></div>
-<section class="timeline-shell calendar-shell" aria-label="Calendário mensal de reservas"><div class="timeline-head calendar-head"><div><h2>Calendário de reservas</h2><p id="timelinePeriod">Visualização mensal</p></div><div class="calendar-tools"><div class="calendar-filters"><label>Veículo<select id="calendarVehicleFilter" aria-label="Filtrar calendário por veículo"><option value="">Todos os veículos</option></select></label><label>Usuário<select id="calendarUserFilter" aria-label="Filtrar calendário por usuário"><option value="">Todos os usuários</option></select></label><button type="button" class="btn calendar-clear" id="calendarClearFilters">Limpar filtros</button></div><div class="calendar-nav"><button type="button" class="btn calendar-arrow" id="calendarPrev" aria-label="Mês anterior" title="Mês anterior">‹</button><button type="button" class="btn calendar-today" id="calendarToday">Hoje</button><button type="button" class="btn calendar-arrow" id="calendarNext" aria-label="Próximo mês" title="Próximo mês">›</button></div></div></div><div class="calendar-weekdays" aria-hidden="true"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div><div class="calendar-scroll"><div class="month-calendar" id="fleetTimeline"></div></div><div class="calendar-help"><b>Clique ou toque em um dia</b> para abrir o histórico completo. Os filtros de veículo e usuário também serão aplicados ao histórico.</div></section></section>
+<section class="timeline-shell calendar-shell" aria-label="Timeline de reservas"><div class="timeline-head calendar-head"><div><h2>Timeline de reservas</h2><p id="timelinePeriod">Visualização mensal por veículo</p></div><div class="calendar-tools"><div class="calendar-filters"><label>Veículo<select id="calendarVehicleFilter" aria-label="Filtrar calendário por veículo"><option value="">Todos os veículos</option></select></label><label>Usuário<select id="calendarUserFilter" aria-label="Filtrar calendário por usuário"><option value="">Todos os usuários</option></select></label><button type="button" class="btn calendar-clear" id="calendarClearFilters">Limpar filtros</button></div><div class="calendar-nav"><button type="button" class="btn calendar-arrow" id="calendarPrev" aria-label="Mês anterior" title="Mês anterior">‹</button><button type="button" class="btn calendar-today" id="calendarToday">Hoje</button><button type="button" class="btn calendar-arrow" id="calendarNext" aria-label="Próximo mês" title="Próximo mês">›</button></div></div></div><div class="calendar-weekdays" aria-hidden="true"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div><div class="calendar-scroll"><div class="month-calendar" id="fleetTimeline"></div></div><div class="calendar-help"><b>Clique ou toque em uma reserva</b> para abrir o histórico completo do dia. Os filtros de veículo e usuário também serão aplicados ao histórico.</div></section></section>
 <section class="view" id="fleet"><div class="section-head"><div><h2>Base de veículos</h2><p>Edite diretamente as células ou adicione um novo registro.</p></div><button class="btn primary" id="addVehicle">＋ Novo veículo</button></div><div class="panel"><table><thead><tr><th>Model</th><th>Version</th><th>Color</th><th>Year / Model</th><th>Plate</th><th>Renavam</th><th>Chassis</th><th>Rotation Day in SP. Don't Use In</th><th>Ação</th></tr></thead><tbody id="fleetBody"></tbody></table></div></section>
 <section class="view" id="users"><div class="section-head"><div><h2>Usuários da Frota</h2><p>CPF e CNH ficam mascarados. A pasta do SharePoint é obrigatória.</p></div><div class="section-actions"><button class="btn primary" id="addUser">＋ Novo usuário</button><a class="btn form-request-link" href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=-48TzE2cO0OyEdRUmuYui9EJ5HObxoJMvHvuMIm7xfZUQkNCNFlSSjhJM1hUVURQNkdHTFU1N1lINS4u&route=shorturl" target="_blank" rel="noopener noreferrer" title="Abrir Formulário de Solicitação">Formulário de Solicitação</a></div></div><div class="panel"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Departamento</th><th>Cargo</th><th>CPF</th><th>CNH</th><th>SharePoint</th><th>Status</th><th>Ações</th></tr></thead><tbody id="userBody"></tbody></table></div></section><section class="view" id="requests"><div class="section-head"><div><h2>Solicitações</h2><p>Reservas registradas no sistema. Por padrão, os registros mais recentes aparecem primeiro.</p></div><button type="button" class="btn primary export-xlsx-btn" id="exportRequestsXlsx" title="Exportar todas as solicitações para Excel">⇩ Exportar Excel</button></div>
 <div class="request-status-tabs" role="tablist" aria-label="Situação das solicitações">
@@ -728,4 +382,55 @@ function openUser(id=null){editingUser=id?adminUsers.find(u=>u.id===id):null;use
 vehicleFields.innerHTML=fields.map((f,i)=>`<label class="${i>6?'full':''}">${labels[i]} *<input name="${f}" required></label>`).join('');addVehicle.onclick=()=>openM('vehicleModal');vehicleForm.onsubmit=async e=>{e.preventDefault();let v={id:crypto.randomUUID(),project:'',...Object.fromEntries(new FormData(e.target)),active:true};vehicles.push(v);await saveVehicle(v);e.target.reset();closeM('vehicleModal');render();toast('Veículo salvo.')};fleetBody.addEventListener('focusout',async e=>{if(!e.target.dataset.field)return;let v=vehicles.find(v=>v.id===e.target.closest('tr').dataset.id);v[e.target.dataset.field]=e.target.textContent.trim();await saveVehicle(v);render()});damageList.addEventListener('change',e=>{if(e.target.dataset.damageType){const m=inspectionMarks.find(x=>x.point_id===e.target.dataset.damageType);if(m){m.damage_type=e.target.value;buildInspectionViews()}}});damageList.addEventListener('input',e=>{if(e.target.dataset.damageDescription){const m=inspectionMarks.find(x=>x.point_id===e.target.dataset.damageDescription);if(m)m.description=e.target.value}});inspectionForm.onsubmit=async e=>{e.preventDefault();if(!activeInspection)return;const f=Object.fromEntries(new FormData(e.target));if(!f.documents_in_vehicle)return toast('Marque SIM ou NÃO para os documentos no carro.');const payload={request_id:activeInspection.request.id,vehicle_id:activeInspection.vehicle.id,fleet_user_id:activeInspection.request.fleet_user_id,inspection_type:activeInspection.type,odometer_km:Number(f.odometer_km),inspection_date:f.inspection_date,inspection_time:f.inspection_time,inspector_name:f.inspector_name,driver_name:f.driver_name,documents_in_vehicle:f.documents_in_vehicle,vehicle_notes:packInspectionNotes(f.vehicle_notes,f.inspector_employee_number,f.driver_employee_number),damages:inspectionMarks,status:'completed',inspector_employee_number:f.inspector_employee_number,driver_employee_number:f.driver_employee_number},btn=saveInspection;btn.disabled=true;btn.textContent='Gerando PDF...';try{const {inspector_employee_number,driver_employee_number,...dbPayload}=payload;let q=activeInspection.existing?db.from('vehicle_inspections').update(dbPayload).eq('id',activeInspection.existing.id):db.from('vehicle_inspections').insert(dbPayload),{error}=await q;if(error)throw error;let bytes=await generateInspectionPdf({...payload,vehicle:activeInspection.vehicle});await uploadChecklist(bytes,activeInspection.request,activeInspection.type);if(activeInspection.type==='return')await finishReservationAfterReturnChecklist(activeInspection.request.id);closeM('inspectionModal');downloadBlob(bytes,'application/pdf',`Checklist_${activeInspection.type==='withdrawal'?'Retirada':'Devolucao_Final'}_${safeName(activeInspection.vehicle.plate)}.pdf`);await load();if(activeInspection.type==='return'){requestFilterState.tab='finished';renderRequestsTable();toast('Checklist de devolução concluído. Reserva encerrada e veículo disponível.')}else toast('Checklist concluído e salvo permanentemente.')}catch(err){console.error(err);toast('Erro ao concluir checklist: '+err.message)}finally{btn.disabled=false;btn.textContent='Concluir vistoria e gerar PDF'}};
 document.querySelectorAll('[data-request-tab]').forEach(btn=>btn.addEventListener('click',()=>{requestFilterState.tab=btn.dataset.requestTab;requestFilterState.status='';requestStatusFilter.value='';renderRequestsTable()}));exportRequestsXlsx?.addEventListener('click',exportRequestsToXlsx);requestSearch?.addEventListener('input',e=>{requestFilterState.search=e.target.value;renderRequestsTable()});requestStatusFilter?.addEventListener('change',e=>{requestFilterState.status=e.target.value;renderRequestsTable()});requestVehicleFilter?.addEventListener('change',e=>{requestFilterState.vehicle=e.target.value;renderRequestsTable()});requestUserFilter?.addEventListener('change',e=>{requestFilterState.user=e.target.value;renderRequestsTable()});requestSort?.addEventListener('change',e=>{requestFilterState.sort=e.target.value;renderRequestsTable()});clearRequestFilters?.addEventListener('click',()=>{requestFilterState.search='';requestFilterState.status='';requestFilterState.vehicle='';requestFilterState.user='';requestFilterState.sort='created_desc';requestSearch.value='';requestStatusFilter.value='';requestVehicleFilter.value='';requestUserFilter.value='';requestSort.value='created_desc';renderRequestsTable()});
 requestForm.onsubmit=async e=>{e.preventDefault();let x=Object.fromEntries(new FormData(e.target));if(new Date(x.end_at)<=new Date(x.start_at))return toast('A data final deve ser posterior à inicial.');let conflict=requests.some(r=>r.vehicle_id===x.vehicle_id&&r.status!=='CANCELLED'&&new Date(x.start_at)<new Date(r.end_at)&&new Date(x.end_at)>new Date(r.start_at));if(conflict)return toast('Veículo já reservado nesse período.');let u=userOptions.find(u=>u.id===x.fleet_user_id),r={id:crypto.randomUUID(),...x,requester_name:u?.full_name||'',status:'RESERVED',created_at:new Date().toISOString()};requests.unshift(r);await saveRequest(r);e.target.reset();closeM('requestModal');await load();toast('Solicitação registrada. Contrato disponível no card.');setTimeout(()=>downloadContract(r.id),250)};sidebarToggle.onclick=()=>setSidebarCollapsed(!appView.classList.contains('sidebar-collapsed'));setSidebarCollapsed(localStorage.getItem('pp_sidebar_collapsed')==='true',false);simpleLoginForm.onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),email=String(f.email||'').trim().toLowerCase(),password=String(f.password||'');authMessage.textContent='Verificando acesso...';authMessage.className='auth-message';try{await ensureAnonymousSession();const {data,error}=await db.rpc('authenticate_fleet_app_user',{p_email:email,p_password:password});if(error)throw error;if(!data){authMessage.textContent='E-mail ou senha incorretos, ou acesso inativo.';authMessage.className='auth-message error';return}applyAccessMode('registered',email);await load()}catch(err){console.error(err);authMessage.textContent='Não foi possível validar o acesso. Contatar o administrador.';authMessage.className='auth-message error'}};visitorAccess.onclick=async()=>{try{await ensureAnonymousSession();await db.rpc('register_fleet_visitor_access');applyAccessMode('visitor');await load()}catch(err){console.error(err);authMessage.textContent='Não foi possível iniciar o acesso de visitante.';authMessage.className='auth-message error'}};logoutButton.onclick=returnToAccess;async function bootFleetAccess(){const mobile=document.documentElement.classList.contains('mobile-device');if(!mobile){returnToAccess();return}accessView.hidden=true;appView.classList.remove('hidden');authMessage.textContent='';try{await ensureAnonymousSession();await db.rpc('register_fleet_visitor_access');applyAccessMode('visitor');await load()}catch(err){console.error(err);appView.classList.add('hidden');accessView.hidden=false;authMessage.textContent='Não foi possível iniciar o acesso mobile. Utilizar “Entrar como visitante”.';authMessage.className='auth-message error'}}bootFleetAccess();setInterval(()=>{if(accessMode!=='locked')render()},60000);
-</script></body></html>
+</script>
+<script id="fleet-reservation-timeline-v5">
+/* Presentation override only: keeps the same data, filters, colors and history modal. */
+renderFleetTimeline=function(){
+  const host=document.getElementById('fleetTimeline');
+  if(!host)return;
+  const vehicleFilter=document.getElementById('calendarVehicleFilter');
+  const userFilter=document.getElementById('calendarUserFilter');
+  if(vehicleFilter){
+    vehicleFilter.innerHTML='<option value="">Todos os veículos</option>'+vehicles.slice().sort((a,b)=>String(a.model||'').localeCompare(String(b.model||''),'pt-BR')).map(v=>`<option value="${esc(v.id)}">${esc(v.model||'Veículo')} · ${esc(v.plate||'-')}</option>`).join('');
+    vehicleFilter.value=calendarVehicleFilterValue;
+  }
+  if(userFilter){
+    const ids=[...new Set(requests.map(r=>r.fleet_user_id).filter(Boolean))];
+    const listedUsers=ids.map(id=>userOptions.find(u=>u.id===id)||adminUsers.find(u=>u.id===id)).filter(Boolean).sort((a,b)=>String(a.full_name||'').localeCompare(String(b.full_name||''),'pt-BR'));
+    userFilter.innerHTML='<option value="">Todos os usuários</option>'+listedUsers.map(u=>`<option value="${esc(u.id)}">${esc(u.full_name||'Usuário')}</option>`).join('');
+    userFilter.value=calendarUserFilterValue;
+  }
+  const monthStart=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth(),1);
+  const monthEnd=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,0,23,59,59,999);
+  const days=monthEnd.getDate();
+  document.getElementById('timelinePeriod').textContent=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(monthStart).replace(/^./,c=>c.toUpperCase())+' · por veículo';
+  const valid=requests.filter(r=>new Date(r.end_at)>=monthStart&&new Date(r.start_at)<=monthEnd&&(!calendarVehicleFilterValue||String(r.vehicle_id)===calendarVehicleFilterValue)&&(!calendarUserFilterValue||String(r.fleet_user_id)===calendarUserFilterValue));
+  const vehicleIds=[...new Set(valid.map(r=>r.vehicle_id).filter(Boolean))];
+  let rowVehicles=vehicles.filter(v=>vehicleIds.some(id=>String(id)===String(v.id)));
+  if(calendarVehicleFilterValue)rowVehicles=vehicles.filter(v=>String(v.id)===calendarVehicleFilterValue);
+  rowVehicles.sort((a,b)=>String(a.model||'').localeCompare(String(b.model||''),'pt-BR'));
+  const today=startOfDay(new Date());
+  const dayHeaders=Array.from({length:days},(_,i)=>{const d=new Date(monthStart.getFullYear(),monthStart.getMonth(),i+1);return `<div class="fleet-timeline-day-head">${i+1}<small>${new Intl.DateTimeFormat('pt-BR',{weekday:'short'}).format(d).replace('.','')}</small></div>`}).join('');
+  const header=`<div class="fleet-timeline-header"><div>Veículo</div><div class="fleet-timeline-days" style="--days:${days}">${dayHeaders}</div></div>`;
+  const rows=rowVehicles.map(v=>{
+    const vr=valid.filter(r=>String(r.vehicle_id)===String(v.id)).sort((a,b)=>new Date(a.start_at)-new Date(b.start_at));
+    const cells=Array.from({length:days},(_,i)=>{const d=new Date(monthStart.getFullYear(),monthStart.getMonth(),i+1);return `<div class="fleet-timeline-cell ${[0,6].includes(d.getDay())?'weekend':''} ${sameCalendarDay(d,today)?'today':''}"></div>`}).join('');
+    const bars=vr.map(r=>{
+      const rawStart=new Date(r.start_at),rawEnd=new Date(r.end_at);
+      const clippedStart=rawStart<monthStart?monthStart:rawStart,clippedEnd=rawEnd>monthEnd?monthEnd:rawEnd;
+      const startDay=clippedStart.getDate(),endDay=clippedEnd.getDate();
+      const left=((startDay-1)/days)*100,width=Math.max((endDay-startDay+1)/days*100,100/days);
+      const status=rStatus(r),cancelled=status==='CANCELLED',concluded=status==='CONCLUDED',color=calendarColor(r.id),user=shortCalendarUser(r),dateKey=calendarKey(startOfDay(rawStart<monthStart?monthStart:rawStart));
+      const label=`${user} · ${calendarStatusPt(status)}`;
+      return `<button type="button" class="fleet-booking-bar calendar-day has-reservations ${cancelled?'cancelled':''} ${concluded?'concluded':''}" data-calendar-date="${dateKey}" style="left:${left}%;width:calc(${width}% - 3px);background:${color};border-left-color:${color}" title="${esc((v.model||'Veículo')+' | '+label)}"><strong>${esc(user)}</strong><span>${esc(label)}</span></button>`;
+    }).join('');
+    return `<div class="fleet-timeline-row"><div class="fleet-timeline-vehicle"><strong>${esc(v.model||'Veículo')}</strong><span>${esc(v.plate||'-')} · ${esc(v.version||'')}</span></div><div class="fleet-timeline-track" style="--days:${days}">${cells}${bars}</div></div>`;
+  }).join('');
+  host.className='month-calendar fleet-reservation-timeline';
+  host.innerHTML=header+(rows||'<div class="fleet-timeline-empty">Nenhuma reserva encontrada para o período e filtros selecionados.</div>');
+};
+/* Re-render once after the original application has completed startup. */
+window.addEventListener('load',()=>setTimeout(()=>{try{renderFleetTimeline()}catch(e){console.error(e)}},0));
+</script>
+
+</body></html>
