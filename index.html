@@ -349,6 +349,54 @@ html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom-color:var(--
 }
 </style>
 
+
+<style id="hub-style-final-adjustments">
+/* Final contrast and sidebar spacing adjustments */
+
+/* Any primary or dark-action button must keep readable light text */
+.btn.primary,
+button.btn.primary,
+a.btn.primary,
+button[style*="background:#272d3e"],
+button[style*="background: #272d3e"],
+button[style*="background:#1f2937"],
+button[style*="background: #1f2937"],
+button[style*="background:#111827"],
+button[style*="background: #111827"]{
+  color:#fff !important;
+}
+.btn.primary *,
+button.btn.primary *,
+a.btn.primary *{
+  color:inherit !important;
+}
+
+/* White notification bubble with red text in Solicitações */
+.requests-nav-button .nav-notification,
+#navRequests .nav-notification,
+.nav-notification{
+  background:#fff !important;
+  color:#c8102e !important;
+  border:1px solid rgba(200,16,46,.18) !important;
+  box-shadow:0 2px 7px rgba(55,0,10,.24) !important;
+}
+
+/* Move all sidebar menu tabs slightly downward */
+.compact-nav{
+  margin-top:18px !important;
+}
+.app.sidebar-collapsed .compact-nav{
+  margin-top:18px !important;
+}
+
+@media(max-width:820px){
+  .compact-nav,
+  .app.sidebar-collapsed .compact-nav{
+    margin-top:12px !important;
+  }
+}
+</style>
+
 </head><body><div class="reservation-finished-popup" id="reservationFinishedPopup" hidden role="dialog" aria-modal="true" aria-labelledby="reservationFinishedTitle">
   <div class="reservation-finished-card">
     <div class="reservation-finished-icon">✓</div>
