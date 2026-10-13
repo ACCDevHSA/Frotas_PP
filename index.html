@@ -278,6 +278,66 @@ main{padding:24px 28px}.topbar h1{font-size:25px}.kpi,.panel,.vehicle-card,.time
 }
 </style>
 
+
+<style id="dark-mode-action-contrast-v1">
+/* High-contrast action buttons for dark mode */
+html[data-theme="dark"] .card-request,
+html[data-theme="dark"] #detailsRequest,
+html[data-theme="dark"] #addVehicle,
+html[data-theme="dark"] #addUser,
+html[data-theme="dark"] .sharepoint-btn,
+html[data-theme="dark"] #exportRequestsXlsx{
+  background:#ffffff !important;
+  color:#c8102e !important;
+  border-color:#ffffff !important;
+  text-shadow:none !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.28) !important;
+}
+html[data-theme="dark"] .card-request:hover,
+html[data-theme="dark"] #detailsRequest:hover,
+html[data-theme="dark"] #addVehicle:hover,
+html[data-theme="dark"] #addUser:hover,
+html[data-theme="dark"] .sharepoint-btn:hover,
+html[data-theme="dark"] #exportRequestsXlsx:hover{
+  background:#f8f8f8 !important;
+  color:#a8001c !important;
+  border-color:#f8f8f8 !important;
+  filter:brightness(1.03);
+}
+html[data-theme="dark"] .card-request:focus-visible,
+html[data-theme="dark"] #detailsRequest:focus-visible,
+html[data-theme="dark"] #addVehicle:focus-visible,
+html[data-theme="dark"] #addUser:focus-visible,
+html[data-theme="dark"] .sharepoint-btn:focus-visible,
+html[data-theme="dark"] #exportRequestsXlsx:focus-visible{
+  outline:3px solid rgba(239,64,86,.42) !important;
+  outline-offset:2px !important;
+}
+/* Solicitações > Checklist de Retirada: white button and red play icon */
+html[data-theme="dark"] #requests td:nth-child(10) .checklist-play-icon{
+  background:#ffffff !important;
+  color:#c8102e !important;
+  border-color:#ffffff !important;
+  text-shadow:none !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.28) !important;
+}
+html[data-theme="dark"] #requests td:nth-child(10) .checklist-play-icon:hover:not(:disabled){
+  background:#f8f8f8 !important;
+  color:#a8001c !important;
+  transform:translateY(-1px);
+}
+html[data-theme="dark"] #requests td:nth-child(10) .checklist-play-icon:focus-visible{
+  outline:3px solid rgba(239,64,86,.42) !important;
+  outline-offset:2px !important;
+}
+html[data-theme="dark"] #requests td:nth-child(10) .checklist-play-icon:disabled{
+  background:#ffffff !important;
+  color:#c8102e !important;
+  border-color:#ffffff !important;
+  opacity:.58 !important;
+}
+</style>
+
 </head><body><div class="reservation-finished-popup" id="reservationFinishedPopup" hidden role="dialog" aria-modal="true" aria-labelledby="reservationFinishedTitle">
   <div class="reservation-finished-card">
     <div class="reservation-finished-icon">✓</div>
